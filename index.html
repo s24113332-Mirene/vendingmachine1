@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Premium Travel Vending Machine</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+/* 🌍 BLUE WORLD MAP BACKGROUND WITH GLOW */
+body {
+  background-image: url('https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  font-family: 'Poppins', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  position: relative;
+}
+
+/* Blue overlay glow for lighting effect */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0, 102, 204, 0.15), rgba(0, 153, 255, 0.25));
+  pointer-events: none;
+  z-index: 0;
+  backdrop-filter: brightness(1.2) contrast(1.1);
+  mix-blend-mode: lighten;
+}
+
+/* 💼 3-COLOR BLUE SUITCASE GRADIENT */
+.vending-container {
+  width: 680px;
+  background: linear-gradient(135deg, #cce6ff 0%, #3399ff 60%, #004d99 100%);
+  padding: 35px;
+  border-radius: 35px;
+  box-shadow: 0 20px 60px rgba(0,0,40,0.45);
+  text-align: center;
+  color: #fff;
+  position: relative;
+  border: 8px solid #005bb5;
+  z-index: 2; /* above map overlay but below airplanes */
+}
+
+/* suitcase handle */
+.vending-container::before {
+  content: '';
+  position: absolute;
+  top: -50px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 160px;
+  height: 40px;
+  background: linear-gradient(90deg, #cce6ff 0%, #3399ff 100%);
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 5px 10px rgba(0,0,40,0.35);
+}
+
+/* suitcase corner protectors */
+.vending-container::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 35px;
+  box-shadow:
+    10px 10px 0 #005bb5,
+    -10px 10px 0 #005bb5,
+    10px -10px 0 #005bb5,
+    -10px -10px 0 #005bb5;
+  pointer-events: none;
+}
+
+/* ✈️ Airplanes flying around the vending machine */
+.airplane {
+  position: absolute;
+  font-size: 50px;
+  z-index: 3;
+  top: 50%;
+  left: 50%;
+  transform-origin: 350px 0; /* orbit radius */
+}
+
+.airplane1 {
+  animation: flyAirplane1 14s linear infinite;
+}
+
+.airplane2 {
+  animation: flyAirplane2 18s linear infinite;
+}
+
+@keyframes flyAirplane1 {
+  0%   { transform: rotate(0deg) translateX(350px) translateY(0px) rotate(0deg); }
+  20%  { transform: rotate(70deg) translateX(350px) translateY(-25px) rotate(70deg); }
+  40%  { transform: rotate(150deg) translateX(350px) translateY(15px) rotate(150deg); }
+  60%  { transform: rotate(220deg) translateX(350px) translateY(-10px) rotate(220deg); }
+  80%  { transform: rotate(300deg) translateX(350px) translateY(20px) rotate(300deg); }
+  100% { transform: rotate(360deg) translateX(350px) translateY(0px) rotate(360deg); }
+}
+
+@keyframes flyAirplane2 {
+  0%   { transform: rotate(180deg) translateX(350px) translateY(0px) rotate(180deg); }
+  20%  { transform: rotate(250deg) translateX(350px) translateY(20px) rotate(250deg); }
+  40%  { transform: rotate(320deg) translateX(350px) translateY(-15px) rotate(320deg); }
+  60%  { transform: rotate(400deg) translateX(350px) translateY(10px) rotate(400deg); }
+  80%  { transform: rotate(470deg) translateX(350px) translateY(-20px) rotate(470deg); }
+  100% { transform: rotate(540deg) translateX(350px) translateY(0px) rotate(540deg); }
+}
+
+/* ☁️ Clouds floating around */
+.cloud {
+  position: absolute;
+  font-size: 50px;
+  opacity: 0.6;
+  z-index: 1;
+}
+
+.cloud1 {
+  top: 20%; left: -100px;
+  animation: cloudMove1 60s linear infinite;
+}
+
+.cloud2 {
+  top: 60%; left: -150px;
+  animation: cloudMove2 90s linear infinite;
+  font-size: 70px;
+  opacity: 0.4;
+}
+
+.cloud3 {
+  top: 40%; left: -200px;
+  animation: cloudMove3 120s linear infinite;
+  font-size: 60px;
+  opacity: 0.5;
+}
+
+@keyframes cloudMove1 {
+  0% { transform: translateX(0) translateY(0); }
+  50% { transform: translateX(50vw) translateY(10px); }
+  100% { transform: translateX(120vw) translateY(0); }
+}
+@keyframes cloudMove2 {
+  0% { transform: translateX(0) translateY(0); }
+  50% { transform: translateX(50vw) translateY(-15px); }
+  100% { transform: translateX(120vw) translateY(0); }
+}
+@keyframes cloudMove3 {
+  0% { transform: translateX(0) translateY(0); }
+  50% { transform: translateX(50vw) translateY(10px); }
+  100% { transform: translateX(120vw) translateY(0); }
+}
+
+/* header */
+.header {
+  margin-bottom: 20px;
+  background: linear-gradient(90deg, #3399ff, #4da6ff, #80bfff);
+  border-radius: 15px;
+  padding: 15px;
+  box-shadow: 0 0 25px rgba(0,153,255,0.6);
+  font-family: 'Playfair Display', serif;
+}
+
+/* screen */
+.screen {
+  background: #e6f2ff;
+  border: 3px solid #3399ff;
+  border-radius: 15px;
+  padding: 18px;
+  margin-bottom: 18px;
+  min-height: 160px;
+  position: relative;
+  color: #003366;
+  box-shadow: 0 0 20px rgba(51,153,255,0.3);
+}
+
+.screen p { font-size: 16px; font-weight: 600; margin: 6px 0; }
+#balance { font-size: 20px; font-weight: 700; color: #0059b3; }
+#inserted-coins { font-size: 14px; color: #3399ff; font-style: italic; }
+#total { font-size: 16px; color: #0073e6; font-weight: 700; margin-top: 5px; }
+
+.center-message {
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  text-align: center;
+  font-weight: bold;
+  letter-spacing: 1px;
+  font-size: 22px;
+  z-index: 5;
+  padding: 15px 30px;
+  border-radius: 20px;
+  box-shadow: 0 0 25px rgba(255,255,255,0.5);
+}
+
+#dispense-msg { background: linear-gradient(45deg,#3399ff,#4da6ff,#80bfff); color:#fff;}
+#change-msg { background: linear-gradient(45deg,#00ccff,#3399ff); color:#fff;}
+
+/* coin buttons */
+.coin-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; }
+.coin-buttons button {
+  font-weight: bold; font-size: 16px; padding: 12px 25px; border-radius: 12px;
+  border: none; cursor: pointer; background: linear-gradient(45deg,#3399ff,#4da6ff,#80bfff);
+  color: #fff; box-shadow: 0 0 15px #3399ff,0 0 30px #4da6ff; transition: 0.3s;
+}
+.coin-buttons button:hover {
+  transform: scale(1.12); box-shadow: 0 0 30px #3399ff,0 0 50px #4da6ff,0 0 70px #80bfff;
+}
+
+/* products */
+.product-section { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+.product {
+  background: linear-gradient(145deg,#99ccff,#4da6ff,#3399ff);
+  border-radius: 15px; padding: 20px; text-align: center;
+  box-shadow: 0 5px 15px rgba(51,153,255,0.3);
+  cursor: not-allowed; transition: 0.3s;
+  position: relative;
+}
+.product.enabled { cursor:pointer; }
+.product.affordable { border: 2px solid #00ff66; box-shadow: 0 0 20px #00ff66, 0 0 40px #00ff66; }
+.product:hover.enabled { transform: scale(1.05); box-shadow:0 0 40px #00ff66,0 0 60px #33ff99; }
+.product.selected { background:#3399ff80; border-color:#3399ff; box-shadow:0 0 40px #3399ff,0 0 70px #4da6ff;}
+.product-icon { font-size: 50px; margin-bottom: 10px; }
+.product-name { font-size:18px; font-weight:bold; margin-bottom:3px; }
+.product-price { font-size:14px; margin-bottom:5px; }
+
+/* quantity & action buttons */
+.quantity-section { margin-top: 15px; font-weight: bold; color: #fff; text-shadow:0 0 10px #3399ff; }
+.quantity-section input { width: 60px; padding: 8px; border-radius: 8px; font-weight: bold; text-align: center; }
+
+.action-buttons { display: flex; flex-direction: column; align-items: center; }
+.action-buttons button {
+  font-size: 16px; font-weight: bold; padding: 12px 30px; border-radius: 12px; cursor: pointer;
+  border: none; margin-top: 10px; background: linear-gradient(45deg,#3399ff,#4da6ff,#80bfff);
+  color: #fff; box-shadow:0 0 30px #3399ff,0 0 50px #4da6ff; transition:0.3s;
+}
+.action-buttons button:hover {
+  transform: scale(1.12); box-shadow:0 0 40px #3399ff,0 0 70px #4da6ff,0 0 100px #80bfff;
+}
+
+.reset-btn { display:none; margin-top:10px; }
+
+.item-float {
+  position: absolute; font-size: 18px; font-weight: bold; color: #0059b3;
+  animation: floatCoin 1s ease forwards; z-index: 1000;
+}
+@keyframes floatCoin { 0% { transform: translate(0,0) scale(1); opacity:1; } 100% { transform: translate(0,-60px) scale(0.5); opacity:0; } }
+
+</style>
+</head>
+<body>
+
+<div class="vending-container">
+
+  <!-- ✈️ Airplanes flying around -->
+  <div class="airplane airplane1">✈️</div>
+  <div class="airplane airplane2">✈️</div>
+
+  <!-- ☁️ Clouds floating -->
+  <div class="cloud cloud1">☁️</div>
+  <div class="cloud cloud2">☁️</div>
+  <div class="cloud cloud3">☁️</div>
+
+  <div class="header">
+    <h1>Premium Travel Vending Machine</h1>
+    <p>Adventure Essentials • Explore & Go!</p>
+  </div>
+
+  <div class="screen">
+    <p><strong>Balance:</strong> <span id="balance">0</span> NTD</p>
+    <p id="inserted-coins">Inserted coins: 0</p>
+    <p id="total">Total Selected: 0 NTD</p>
+    <p id="message">🪙 Please insert coins to begin!</p>
+    <div id="dispense-msg" class="center-message">🎁 Dispensing your items...</div>
+    <div id="change-msg" class="center-message">💰 Returning coins...</div>
+  </div>
+
+  <div class="coin-section">
+    <h3>Insert Coins</h3>
+    <div class="coin-buttons">
+      <button onclick="insert(50)">NT$50</button>
+      <button onclick="insert(100)">NT$100</button>
+      <button onclick="insert(500)">NT$500</button>
+      <button onclick="insert(1000)">NT$1000</button>
+    </div>
+  </div>
+
+  <div class="product-section">
+    <div class="product" data-price="350" onclick="toggleSelect(this,'Noise-Cancelling Headphones',350)">
+      <div class="product-icon">🎧</div>
+      <div class="product-name">Noise-Cancelling Headphones</div>
+      <div class="product-price">350 NTD</div>
+    </div>
+    <div class="product" data-price="250" onclick="toggleSelect(this,'Portable Power Bank 20000mAh',250)">
+      <div class="product-icon">🔋</div>
+      <div class="product-name">Portable Power Bank</div>
+      <div class="product-price">250 NTD</div>
+    </div>
+    <div class="product" data-price="150" onclick="toggleSelect(this,'Luxury Eye Mask',150)">
+      <div class="product-icon">😴</div>
+      <div class="product-name">Luxury Eye Mask</div>
+      <div class="product-price">150 NTD</div>
+    </div>
+    <div class="product" data-price="200" onclick="toggleSelect(this,'Travel Pillow Memory Foam',200)">
+      <div class="product-icon">💤</div>
+      <div class="product-name">Memory Foam Pillow</div>
+      <div class="product-price">200 NTD</div>
+    </div>
+    <div class="product" data-price="180" onclick="toggleSelect(this,'Premium Travel Adapter',180)">
+      <div class="product-icon">🔌</div>
+      <div class="product-name">Premium Adapter</div>
+      <div class="product-price">180 NTD</div>
+    </div>
+    <div class="product" data-price="220" onclick="toggleSelect(this,'Anti-Theft Neck Wallet',220)">
+      <div class="product-icon">👝</div>
+      <div class="product-name">Neck Wallet</div>
+      <div class="product-price">220 NTD</div>
+    </div>
+    <div class="product" data-price="300" onclick="toggleSelect(this,'Mini First Aid Kit Deluxe',300)">
+      <div class="product-icon">🩹</div>
+      <div class="product-name">First Aid Kit Deluxe</div>
+      <div class="product-price">300 NTD</div>
+    </div>
+    <div class="product" data-price="270" onclick="toggleSelect(this,'Travel Toiletry Bottles Set',270)">
+      <div class="product-icon">🧴</div>
+      <div class="product-name">Toiletry Bottles</div>
+      <div class="product-price">270 NTD</div>
+    </div>
+  </div>
+
+  <div class="quantity-section">
+    <label for="global-quantity">Quantity for all selected items:</label>
+    <input type="number" id="global-quantity" value="1" min="1" onchange="updateGlobalQuantity()">
+  </div>
+
+  <div class="action-buttons">
+    <button class="confirm" onclick="confirmPurchase()">🧾 CONFIRM PURCHASE</button>
+    <button class="reset-btn" id="resetBtn" onclick="resetMachine()">🪙 INSERT ANOTHER COIN</button>
+  </div>
+</div>
+
+<script>
+let balance=0, insertedCoins=[], selectedItems=[], globalQuantity=1;
+const quotes = ["✈️ Adventure awaits!","🌍 Explore the world, one step at a time.","👜 Travel light, live fully.","🏖️ Collect moments, not things.","🚀 Your journey begins now!"];
+function insert(amount){ balance+=amount; insertedCoins.push(`NT$${amount}`); updateDisplay(); setMessage(`🪙 Inserted NT$${amount}. Balance: NT$${balance}`); highlightAffordableProducts(); enableProducts(); playSound("coin"); }
+function enableProducts(){ document.querySelectorAll('.product').forEach(p=>p.classList.add('enabled')); }
+function toggleSelect(element,name,price){ 
+  if(!element.classList.contains('enabled'))return; 
+  let quantity=parseInt(globalQuantity); if(isNaN(quantity)||quantity<1)quantity=1; 
+  let currentTotal=selectedItems.reduce((sum,i)=>sum+i.price*i.quantity,0); 
+  if(!element.classList.contains('selected')&&currentTotal+price*quantity>balance){
+    setMessage("⚠️ Not enough balance for this item!");
+    playSound("error");
+    return;
+  } 
+  if(element.classList.contains('selected')){
+    element.classList.remove('selected');
+    selectedItems=selectedItems.filter(i=>i.name!==name);
+  }else{
+    element.classList.add('selected');
+    selectedItems.push({name,price,quantity});
+  } 
+  setMessage(`${selectedItems.length} item(s) selected.`);
+  updateTotal();
+}
+function updateGlobalQuantity(){ 
+  let qty=parseInt(document.getElementById("global-quantity").value); 
+  if(isNaN(qty)||qty<1)qty=1; 
+  globalQuantity=qty; 
+  selectedItems.forEach(i=>i.quantity=globalQuantity); 
+  updateTotal();
+}
+function updateTotal(){ 
+  let total=selectedItems.reduce((sum,i)=>sum+i.price*(isNaN(i.quantity)||i.quantity<1?1:i.quantity),0); 
+  document.getElementById("total").textContent=`Total Selected: ${total} NTD`; 
+}
+function confirmPurchase(){ 
+  if(selectedItems.length===0){setMessage("⚠️ Select at least one product!");playSound("error");return;} 
+  let total=selectedItems.reduce((sum,i)=>sum+i.price*(isNaN(i.quantity)||i.quantity<1?1:i.quantity),0); 
+  if(balance>=total){ 
+    balance-=total; 
+    let randomQuote=quotes[Math.floor(Math.random()*quotes.length)]; 
+    setMessage(`🎉 Purchased ${selectedItems.length} items for NT$${total}!\n${randomQuote}`); 
+    animateItems(); 
+    playSound("buy"); 
+    setTimeout(()=>{document.getElementById("resetBtn").style.display="block";},1000); 
+    updateDisplay(); 
+    updateTotal(); 
+  } else { 
+    setMessage(`⚠️ Not enough balance! Need NT$${total-balance} more.`); 
+    playSound("error"); 
+  } 
+}
+function resetMachine(){ 
+  balance=0; insertedCoins=[]; selectedItems=[]; 
+  updateDisplay(); 
+  setMessage("🪙 Please insert coins to begin!"); 
+  document.getElementById("resetBtn").style.display="none"; 
+  document.querySelectorAll(".product").forEach(p=>p.classList.remove("selected","affordable","enabled")); 
+  updateTotal();
+}
+function updateDisplay(){ 
+  document.getElementById("balance").textContent=balance; 
+  document.getElementById("inserted-coins").textContent=insertedCoins.length>0?"Inserted coins: "+insertedCoins.join(","):"Inserted coins: 0"; 
+}
+function setMessage(msg){ document.getElementById("message").textContent=msg; }
+function highlightAffordableProducts(){ 
+  document.querySelectorAll(".product").forEach(p=>{
+    const price=parseInt(p.getAttribute("data-price")); 
+    if(balance>=price){p.classList.add("affordable");p.classList.add("enabled");} 
+    else p.classList.remove("affordable"); 
+  }); 
+}
+function animateItems(){ 
+  const container=document.querySelector(".vending-container"); 
+  selectedItems.forEach((item,i)=>{
+    const icon=document.createElement("div"); 
+    icon.className="item-float"; 
+    icon.textContent=item.name.includes("Headphones")?"🎧":item.name.includes("Power Bank")?"🔋":item.name.includes("Eye Mask")?"😴":item.name.includes("Pillow")?"💤":item.name.includes("Adapter")?"🔌":item.name.includes("Wallet")?"👝":item.name.includes("First Aid")?"🩹":"🧴"; 
+    icon.style.left=`${50+i*70}px`; 
+    container.appendChild(icon); 
+    setTimeout(()=>icon.remove(),1200); 
+  }); 
+}
+function playSound(type){ 
+  const audio=new Audio(); 
+  if(type==="coin")audio.src="https://cdn.pixabay.com/audio/2022/03/15/audio_7dcf0e0f9f.mp3"; 
+  if(type==="buy")audio.src="https://cdn.pixabay.com/audio/2022/03/15/audio_c68c7c4eb6.mp3"; 
+  if(type==="error")audio.src="https://cdn.pixabay.com/audio/2022/03/15/audio_4b1e87257a.mp3"; 
+  audio.volume=0.3; 
+  audio.play(); 
+}
+</script>
+
+</body>
+</html>
