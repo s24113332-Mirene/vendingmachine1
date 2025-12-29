@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Premium Travel Vending Machine</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    /* 🌊 Blue machine palette */
+    --blue-1:#071b2f;
+    --blue-2:#0b2a4a;
+    --blue-3:#0b4fa8;
+    --blue-4:#1e88e5;
+    --blue-5:#4fc3f7;
+    --ice:#eaf6ff;
+    --white:#ffffff;
+    --shadow: rgba(0,0,0,0.28);
+    --glow: rgba(79,195,247,0.45);
+    --accent: #7dd3fc;
+    --good: #22c55e;
+  }
+
+  /* 🌍 WORLD MAP BACKGROUND (Blue-tinted + complementary overlay) */
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family:'Poppins',sans-serif;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow-x:hidden;
+    background: radial-gradient(1200px 600px at 20% 10%, rgba(79,195,247,0.20), transparent 60%),
+                radial-gradient(900px 500px at 90% 30%, rgba(30,136,229,0.18), transparent 55%),
+                linear-gradient(160deg, #071b2f, #0a2b4b 45%, #071b2f);
+    position:relative;
+  }
+
+  /* Map layer */
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background-image:url('https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/World_map_-_low_resolution.svg/1200px-World_map_-_low_resolution.svg.png');
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+    opacity:0.18;
+    filter: hue-rotate(190deg) saturate(1.2) contrast(1.05);
+    transform: scale(1.02);
+    pointer-events:none;
+    z-index:0;
+  }
+
+  /* Tint + fog */
+  body::after{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:
+      linear-gradient(180deg, rgba(234,246,255,0.10), rgba(7,27,47,0.55)),
+      radial-gradient(700px 380px at 50% 40%, rgba(234,246,255,0.10), transparent 70%);
+    backdrop-filter: blur(1.5px);
+    pointer-events:none;
+    z-index:1;
+  }
+
+  /* ✈️ + ☁️ Flying planes + clouds background */
+  .sky{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:2; /* above map overlays, below machine */
+    overflow:hidden;
+  }
+
+  /* subtle cloud “mist” layer */
+  .cloud{
+    position:absolute;
+    width: 320px;
+    height: 140px;
+    border-radius: 999px;
+    background: radial-gradient(circle at 30% 50%, rgba(234,246,255,0.22), transparent 55%),
+                radial-gradient(circle at 60% 45%, rgba(234,246,255,0.18), transparent 58%),
+                radial-gradient(circle at 45% 60%, rgba(234,246,255,0.20), transparent 60%);
+    filter: blur(2px);
+    opacity: 0.55;
+    animation: drift 28s linear infinite;
+  }
+  .c1{ top: 12%; left: -40%; transform: scale(1.0); animation-duration: 30s; animation-delay:-6s;}
+  .c2{ top: 28%; left: -55%; transform: scale(0.85); animation-duration: 34s; animation-delay:-18s; opacity:0.45;}
+  .c3{ top: 62%; left: -50%; transform: scale(1.15); animation-duration: 32s; animation-delay:-12s;}
+  .c4{ top: 78%; left: -65%; transform: scale(0.75); animation-duration: 36s; animation-delay:-22s; opacity:0.40;}
+
+  @keyframes drift{
+    0%   { transform: translateX(-120px) translateY(0) scale(var(--s,1)); }
+    50%  { transform: translateX(55vw) translateY(-8px) scale(var(--s,1)); }
+    100% { transform: translateX(calc(100vw + 420px)) translateY(0) scale(var(--s,1)); }
+  }
+
+  .plane{
+    position:absolute;
+    font-size: clamp(18px, 2.2vw, 34px);
+    opacity:0.75;
+    filter: drop-shadow(0 10px 18px rgba(0,0,0,0.25));
+    transform: translateX(-140px) translateY(0) rotate(0deg);
+    animation: flyR 14s linear infinite;
+  }
+
+  /* left-to-right (R) */
+  .p1{ top:10%; left:-20%; animation-duration: 15s; animation-delay: 0s;  opacity:0.65; }
+  .p2{ top:34%; left:-35%; animation-duration: 18s; animation-delay: -6s; font-size: clamp(16px, 1.9vw, 30px); opacity:0.55; }
+  .p3{ top:70%; left:-25%; animation-duration: 16s; animation-delay: -10s; opacity:0.62; }
+
+  @keyframes flyR{
+    0%   { transform: translateX(-160px) translateY(0) rotate(-7deg); }
+    25%  { transform: translateX(28vw)   translateY(-10px) rotate(-3deg); }
+    50%  { transform: translateX(55vw)   translateY(6px) rotate(1deg); }
+    75%  { transform: translateX(82vw)   translateY(-8px) rotate(4deg); }
+    100% { transform: translateX(calc(100vw + 200px)) translateY(0) rotate(7deg); }
+  }
+
+  /* right-to-left (L) */
+  .planeL{
+    position:absolute;
+    font-size: clamp(16px, 2.0vw, 32px);
+    opacity:0.6;
+    filter: drop-shadow(0 10px 18px rgba(0,0,0,0.22));
+    transform: translateX(calc(100vw + 160px)) rotate(180deg);
+    animation: flyL 19s linear infinite;
+  }
+  .p4{ top:22%; right:-25%; animation-duration: 20s; animation-delay:-7s; opacity:0.50; }
+  .p5{ top:50%; right:-35%; animation-duration: 23s; animation-delay:-16s; font-size: clamp(14px, 1.7vw, 28px); opacity:0.45; }
+  .p6{ top:84%; right:-30%; animation-duration: 26s; animation-delay:-20s; font-size: clamp(12px, 1.5vw, 24px); opacity:0.40; }
+
+  @keyframes flyL{
+    0%   { transform: translateX(calc(100vw + 240px)) translateY(0) rotate(186deg); }
+    25%  { transform: translateX(72vw) translateY(10px) rotate(183deg); }
+    50%  { transform: translateX(45vw) translateY(-6px) rotate(179deg); }
+    75%  { transform: translateX(18vw) translateY(8px) rotate(176deg); }
+    100% { transform: translateX(-260px) translateY(0) rotate(173deg); }
+  }
+
+  /* 💼 Blue suitcase machine + nicer depth */
+  .vending-container{
+    width:min(720px, 92vw);
+    padding: 34px 28px 28px;
+    border-radius: 34px;
+    color: var(--white);
+    position:relative;
+    z-index:5;
+    background:
+      radial-gradient(900px 500px at 10% 0%, rgba(79,195,247,0.35), transparent 55%),
+      linear-gradient(145deg, #0a2f55, #0b4fa8 45%, #1e88e5);
+    border: 7px solid rgba(125, 211, 252, 0.55);
+    box-shadow:
+      0 24px 70px var(--shadow),
+      0 0 55px rgba(79,195,247,0.22);
+    overflow:hidden;
+  }
+
+  /* subtle glossy highlight */
+  .vending-container .shine{
+    position:absolute;
+    inset:-40% -20% auto -30%;
+    height: 70%;
+    background: linear-gradient(120deg, rgba(255,255,255,0.18), rgba(255,255,255,0) 55%);
+    transform: rotate(12deg);
+    pointer-events:none;
+    z-index:0;
+  }
+
+  /* handle */
+  .vending-container::before{
+    content:'';
+    position:absolute;
+    top:-52px;
+    left:50%;
+    transform:translateX(-50%);
+    width: 172px;
+    height: 42px;
+    background: linear-gradient(90deg, rgba(79,195,247,0.95), rgba(30,136,229,0.95));
+    border-radius: 22px 22px 0 0;
+    box-shadow: 0 10px 18px rgba(0,0,0,0.22);
+    border: 3px solid rgba(234,246,255,0.25);
+    z-index:2;
+  }
+
+  /* corner protectors */
+  .vending-container::after{
+    content:'';
+    position:absolute;
+    inset:0;
+    border-radius:34px;
+    box-shadow:
+      10px 10px 0 rgba(125,211,252,0.35),
+      -10px 10px 0 rgba(125,211,252,0.35),
+      10px -10px 0 rgba(125,211,252,0.35),
+      -10px -10px 0 rgba(125,211,252,0.35);
+    pointer-events:none;
+    z-index:1;
+  }
+
+  /* stickers */
+  .sticker{
+    position:absolute;
+    font-size: 28px;
+    opacity: 0.85;
+    filter: drop-shadow(0 10px 16px rgba(0,0,0,0.15));
+    z-index:3;
+  }
+  .sticker1{ top:62px; left:36px; transform: rotate(-12deg); }
+  .sticker2{ bottom:84px; right:48px; transform: rotate(10deg); }
+  .sticker3{ bottom:26px; left:72px; transform: rotate(-6deg); }
+  .sticker4{ top:110px; right:78px; transform: rotate(-18deg); font-size: 32px; opacity: 0.92; }
+  .sticker5{ bottom:120px; left:150px; transform: rotate(14deg); font-size: 26px; opacity: 0.72; }
+  .sticker6{ top:200px; left:220px; transform: rotate(6deg); font-size: 34px; opacity: 0.86; }
+
+  .header{
+    position:relative;
+    z-index:3;
+    margin-bottom: 18px;
+    padding: 16px 16px 14px;
+    border-radius: 16px;
+    background:
+      linear-gradient(90deg, rgba(234,246,255,0.18), rgba(79,195,247,0.18), rgba(234,246,255,0.10));
+    box-shadow: 0 0 22px rgba(79,195,247,0.22);
+    border: 1px solid rgba(234,246,255,0.22);
+    font-family:'Playfair Display', serif;
+  }
+  .header h1{ margin:0; font-size: clamp(24px, 3.2vw, 34px); letter-spacing:0.4px; }
+  .header p{ margin:6px 0 0; font-family:'Poppins',sans-serif; font-weight:600; opacity:0.95; }
+
+  /* screen (glass) */
+  .screen{
+    position:relative;
+    z-index:3;
+    background: rgba(234,246,255,0.85);
+    border: 1px solid rgba(234,246,255,0.70);
+    border-radius: 16px;
+    padding: 18px 18px 16px;
+    margin-bottom: 18px;
+    min-height: 165px;
+    color:#0b2a4a;
+    box-shadow:
+      0 14px 32px rgba(0,0,0,0.18),
+      0 0 30px rgba(79,195,247,0.22);
+    backdrop-filter: blur(8px);
+  }
+  .screen p{ font-size: 15px; font-weight: 700; margin: 6px 0; }
+  #balance{ font-size: 20px; font-weight: 800; color: #0b4fa8; }
+  #inserted-coins{ font-size: 13px; color: #1e88e5; font-style: italic; font-weight: 700; }
+  #total{ font-size: 15px; color: #0b2a4a; font-weight: 800; margin-top: 6px; }
+  #message{ white-space: pre-line; }
+
+  .center-message{
+    pointer-events:none;
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform: translate(-50%, -50%);
+    opacity:0;
+    text-align:center;
+    font-weight:900;
+    letter-spacing: 1px;
+    font-size: 22px;
+    z-index:5;
+    padding: 14px 26px;
+    border-radius: 18px;
+    box-shadow: 0 0 25px rgba(255,255,255,0.65);
+  }
+  #dispense-msg{
+    background: linear-gradient(45deg, rgba(30,136,229,0.95), rgba(79,195,247,0.95));
+    color:#fff;
+  }
+  #change-msg{
+    background: linear-gradient(45deg, rgba(234,246,255,0.95), rgba(125,211,252,0.95));
+    color:#0b2a4a;
+  }
+
+  /* coin buttons */
+  .coin-section{ position:relative; z-index:3; }
+  .coin-section h3{ margin: 10px 0 12px; text-shadow: 0 10px 20px rgba(0,0,0,0.18); }
+  .coin-buttons{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap: 12px;
+  }
+  .coin-buttons button{
+    font-weight: 900;
+    font-size: 15px;
+    padding: 12px 22px;
+    border-radius: 12px;
+    border: 1px solid rgba(234,246,255,0.35);
+    cursor:pointer;
+    color:#06213a;
+    background: linear-gradient(45deg, rgba(234,246,255,0.92), rgba(125,211,252,0.90));
+    box-shadow: 0 10px 24px rgba(0,0,0,0.18), 0 0 30px rgba(79,195,247,0.25);
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+  .coin-buttons button:hover{
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 18px 34px rgba(0,0,0,0.22), 0 0 48px rgba(79,195,247,0.30);
+  }
+
+  /* products */
+  .product-section{
+    position:relative;
+    z-index:3;
+    display:grid;
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap: 14px;
+    margin-top: 16px;
+  }
+  @media (max-width: 560px){
+    .product-section{ grid-template-columns: 1fr; }
+  }
+
+  .product{
+    background:
+      radial-gradient(350px 180px at 20% 0%, rgba(255,255,255,0.20), transparent 55%),
+      linear-gradient(145deg, rgba(234,246,255,0.18), rgba(125,211,252,0.18));
+    border-radius: 16px;
+    padding: 18px 16px;
+    text-align:center;
+    box-shadow: 0 10px 22px rgba(0,0,0,0.18);
+    border: 1px solid rgba(234,246,255,0.22);
+    cursor: not-allowed;
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;
+    position:relative;
+    overflow:hidden;
+  }
+  .product.enabled{ cursor:pointer; }
+  .product:hover.enabled{
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 18px 34px rgba(0,0,0,0.22), 0 0 40px rgba(79,195,247,0.22);
+    border-color: rgba(125,211,252,0.6);
+  }
+
+  .product.affordable{
+    border: 2px solid rgba(34,197,94,0.9);
+    box-shadow: 0 16px 34px rgba(0,0,0,0.22), 0 0 28px rgba(34,197,94,0.22);
+  }
+  .product.selected{
+    background:
+      radial-gradient(360px 180px at 20% 0%, rgba(234,246,255,0.30), transparent 55%),
+      linear-gradient(145deg, rgba(79,195,247,0.25), rgba(30,136,229,0.22));
+    border-color: rgba(125,211,252,0.75);
+    box-shadow: 0 18px 38px rgba(0,0,0,0.25), 0 0 55px rgba(79,195,247,0.28);
+  }
+
+  .product-icon{ font-size: 46px; margin-bottom: 8px; }
+  .product-name{ font-size: 16px; font-weight: 900; margin-bottom: 2px; }
+  .product-price{ font-size: 13px; opacity: 0.95; font-weight: 800; }
+
+  /* quantity */
+  .quantity-section{
+    position:relative;
+    z-index:3;
+    margin-top: 14px;
+    font-weight: 900;
+    text-shadow: 0 12px 22px rgba(0,0,0,0.18);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap: 10px;
+    flex-wrap:wrap;
+  }
+  .quantity-section input{
+    width: 70px;
+    padding: 10px 10px;
+    border-radius: 10px;
+    font-weight: 900;
+    text-align:center;
+    border: 1px solid rgba(234,246,255,0.35);
+    outline: none;
+    background: rgba(234,246,255,0.92);
+    color: #06213a;
+    box-shadow: 0 10px 22px rgba(0,0,0,0.18);
+  }
+
+  /* actions */
+  .action-buttons{
+    position:relative;
+    z-index:3;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  .action-buttons button{
+    font-size: 15px;
+    font-weight: 900;
+    padding: 12px 28px;
+    border-radius: 12px;
+    cursor:pointer;
+    border: 1px solid rgba(234,246,255,0.28);
+    margin-top: 10px;
+    color: #06213a;
+    background: linear-gradient(45deg, rgba(234,246,255,0.92), rgba(125,211,252,0.90));
+    box-shadow: 0 14px 32px rgba(0,0,0,0.18), 0 0 44px rgba(79,195,247,0.22);
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+  .action-buttons button:hover{
+    transform: translateY(-2px) scale(1.06);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.22), 0 0 58px rgba(79,195,247,0.28);
+  }
+  .reset-btn{ display:none; }
+
+  /* floating dispense item */
+  .item-float{
+    position:absolute;
+    font-size: 18px;
+    font-weight: 900;
+    color: #0b4fa8;
+    animation: floatCoin 1s ease forwards;
+    z-index: 1000;
+    filter: drop-shadow(0 10px 16px rgba(0,0,0,0.22));
+  }
+  @keyframes floatCoin{
+    0%{ transform: translate(0,0) scale(1); opacity:1; }
+    100%{ transform: translate(0,-70px) scale(0.55); opacity:0; }
+  }
+</style>
+</head>
+
+<body>
+
+  <!-- ✈️ Planes + clouds in the background -->
+  <div class="sky" aria-hidden="true">
+    <div class="cloud c1"></div>
+    <div class="cloud c2"></div>
+    <div class="cloud c3"></div>
+    <div class="cloud c4"></div>
+
+    <!-- left-to-right -->
+    <div class="plane p1">✈️</div>
+    <div class="plane p2">🛩️</div>
+    <div class="plane p3">✈️</div>
+
+    <!-- right-to-left -->
+    <div class="planeL p4">✈️</div>
+    <div class="planeL p5">🛩️</div>
+    <div class="planeL p6">✈️</div>
+  </div>
+
+  <div class="vending-container">
+    <div class="shine"></div>
+
+    <div class="sticker sticker1">🗺️</div>
+    <div class="sticker sticker2">🎒</div>
+    <div class="sticker sticker3">📸</div>
+    <div class="sticker sticker4">🛫</div>
+    <div class="sticker sticker5">🌴</div>
+    <div class="sticker sticker6">🧭</div>
+
+    <div class="header">
+      <h1>Premium Travel Vending Machine</h1>
+      <p>Adventure Essentials • Explore &amp; Go!</p>
+    </div>
+
+    <div class="screen">
+      <p><strong>Balance:</strong> <span id="balance">0</span> NTD</p>
+      <p id="inserted-coins">Inserted coins: 0</p>
+      <p id="total">Total Selected: 0 NTD</p>
+      <p id="message">🪙 Please insert coins to begin!</p>
+      <div id="dispense-msg" class="center-message">🎁 Dispensing your items...</div>
+      <div id="change-msg" class="center-message">💰 Returning coins...</div>
+    </div>
+
+    <div class="coin-section">
+      <h3>Insert Coins</h3>
+      <div class="coin-buttons">
+        <button onclick="insert(50)">NT$50</button>
+        <button onclick="insert(100)">NT$100</button>
+        <button onclick="insert(500)">NT$500</button>
+        <button onclick="insert(1000)">NT$1000</button>
+      </div>
+    </div>
+
+    <div class="product-section">
+      <div class="product" data-price="350" onclick="toggleSelect(this,'Noise-Cancelling Headphones',350)">
+        <div class="product-icon">🎧</div>
+        <div class="product-name">Noise-Cancelling Headphones</div>
+        <div class="product-price">350 NTD</div>
+      </div>
+      <div class="product" data-price="250" onclick="toggleSelect(this,'Portable Power Bank 20000mAh',250)">
+        <div class="product-icon">🔋</div>
+        <div class="product-name">Portable Power Bank</div>
+        <div class="product-price">250 NTD</div>
+      </div>
+      <div class="product" data-price="150" onclick="toggleSelect(this,'Luxury Eye Mask',150)">
+        <div class="product-icon">😴</div>
+        <div class="product-name">Luxury Eye Mask</div>
+        <div class="product-price">150 NTD</div>
+      </div>
+      <div class="product" data-price="200" onclick="toggleSelect(this,'Travel Pillow Memory Foam',200)">
+        <div class="product-icon">💤</div>
+        <div class="product-name">Memory Foam Pillow</div>
+        <div class="product-price">200 NTD</div>
+      </div>
+      <div class="product" data-price="180" onclick="toggleSelect(this,'Premium Travel Adapter',180)">
+        <div class="product-icon">🔌</div>
+        <div class="product-name">Premium Adapter</div>
+        <div class="product-price">180 NTD</div>
+      </div>
+      <div class="product" data-price="220" onclick="toggleSelect(this,'Anti-Theft Neck Wallet',220)">
+        <div class="product-icon">👝</div>
+        <div class="product-name">Neck Wallet</div>
+        <div class="product-price">220 NTD</div>
+      </div>
+      <div class="product" data-price="300" onclick="toggleSelect(this,'Mini First Aid Kit Deluxe',300)">
+        <div class="product-icon">🩹</div>
+        <div class="product-name">First Aid Kit Deluxe</div>
+        <div class="product-price">300 NTD</div>
+      </div>
+      <div class="product" data-price="270" onclick="toggleSelect(this,'Travel Toiletry Bottles Set',270)">
+        <div class="product-icon">🧴</div>
+        <div class="product-name">Toiletry Bottles</div>
+        <div class="product-price">270 NTD</div>
+      </div>
+    </div>
+
+    <div class="quantity-section">
+      <label for="global-quantity">Quantity for all selected items:</label>
+      <input type="number" id="global-quantity" value="1" min="1" onchange="updateGlobalQuantity()" />
+    </div>
+
+    <div class="action-buttons">
+      <button class="confirm" onclick="confirmPurchase()">🧾 CONFIRM PURCHASE</button>
+      <button class="reset-btn" id="resetBtn" onclick="resetMachine()">🪙 INSERT ANOTHER COIN</button>
+    </div>
+  </div>
+
+<script>
+/* JavaScript remains unchanged */
+let balance=0, insertedCoins=[], selectedItems=[], globalQuantity=1;
+const quotes = ["✈️ Adventure awaits!","🌍 Explore the world, one step at a time.","👜 Travel light, live fully.","🏖️ Collect moments, not things.","🚀 Your journey begins now!"];
+
+function insert(amount){ balance+=amount; insertedCoins.push(`NT$${amount}`); updateDisplay(); setMessage(`🪙 Inserted NT$${amount}. Balance: NT$${balance}`); highlightAffordableProducts(); enableProducts(); playSound("coin"); }
+function enableProducts(){ document.querySelectorAll('.product').forEach(p=>p.classList.add('enabled')); }
+function toggleSelect(element,name,price){
+  if(!element.classList.contains('enabled'))return;
+  let quantity=parseInt(globalQuantity);
+  if(isNaN(quantity)||quantity<1)quantity=1;
+
+  let currentTotal=selectedItems.reduce((sum,i)=>sum+i.price*i.quantity,0);
+  if(!element.classList.contains('selected') && currentTotal+price*quantity>balance){
+    setMessage("⚠️ Not enough balance for this item!");
+    playSound("error");
+    return;
+  }
+  if(element.classList.contains('selected')){
+    element.classList.remove('selected');
+    selectedItems=selectedItems.filter(i=>i.name!==name);
+  }else{
+    element.classList.add('selected');
+    selectedItems.push({name,price,quantity});
+  }
+  setMessage(`${selectedItems.length} item(s) selected.`);
+  updateTotal();
+}
+function updateGlobalQuantity(){
+  let qty=parseInt(document.getElementById("global-quantity").value);
+  if(isNaN(qty)||qty<1)qty=1;
+  globalQuantity=qty;
+  selectedItems.forEach(i=>i.quantity=globalQuantity);
+  updateTotal();
+}
+function updateTotal(){
+  let total=selectedItems.reduce((sum,i)=>sum+i.price*(isNaN(i.quantity)||i.quantity<1?1:i.quantity),0);
+  document.getElementById("total").textContent=`Total Selected: ${total} NTD`;
+}
+function confirmPurchase(){
+  if(selectedItems.length===0){
+    setMessage("⚠️ Select at least one product!");
+    playSound("error");
+    return;
+  }
+  let total=selectedItems.reduce((sum,i)=>sum+i.price*(isNaN(i.quantity)||i.quantity<1?1:i.quantity),0);
+  if(balance>=total){
+    balance-=total;
+    let randomQuote=quotes[Math.floor(Math.random()*quotes.length)];
+    setMessage(`🎉 Purchased ${selectedItems.length} items for NT$${total}!\n${randomQuote}`);
+    animateItems();
+    playSound("buy");
+    setTimeout(()=>{document.getElementById("resetBtn").style.display="block";},1000);
+    updateDisplay();
+    updateTotal();
+  } else {
+    setMessage(`⚠️ Not enough balance! Need NT$${total-balance} more.`);
+    playSound("error");
+  }
+}
+function resetMachine(){
+  balance=0;
+  insertedCoins=[];
+  selectedItems=[];
+  updateDisplay();
+  setMessage("🪙 Please insert coins to begin!");
+  document.getElementById("resetBtn").style.display="none";
+  document.querySelectorAll(".product").forEach(p=>p.classList.remove("selected","affordable","enabled"));
+  updateTotal();
+}
+function updateDisplay(){
+  document.getElementById("balance").textContent=balance;
+  document.getElementById("inserted-coins").textContent=insertedCoins.length>0?"Inserted coins: "+insertedCoins.join(","):"Inserted coins: 0";
+}
+function setMessage(msg){ document.getElementById("message").textContent=msg; }
+function animateItems(){
+  selectedItems.forEach(()=>{
+    let el=document.createElement("div");
+    el.className="item-float";
+    el.textContent="🎁";
+    document.body.appendChild(el);
+    let rect=document.querySelector(".vending-container").getBoundingClientRect();
+    el.style.left=`${rect.left+rect.width/2}px`;
+    el.style.top=`${rect.top+60}px`;
+    setTimeout(()=>{el.remove();},1000);
+  });
+}
+function highlightAffordableProducts(){
+  document.querySelectorAll(".product").forEach(p=>{
+    let price=parseInt(p.getAttribute("data-price"));
+    if(price<=balance) p.classList.add("affordable");
+    else p.classList.remove("affordable");
+  });
+}
+function playSound(type){ /* optional sound implementation */ }
+</script>
+
+</body>
+</html>
