@@ -27,12 +27,14 @@
     font-family:'Poppins',sans-serif;
     position:relative;
 
+    /* ✅ DARKENED a bit so it doesn't match the vending machine */
     background:
-      radial-gradient(1200px 800px at 20% 10%, rgba(79,195,247,0.28), transparent 60%),
-      radial-gradient(1100px 700px at 85% 35%, rgba(30,136,229,0.22), transparent 62%),
-      linear-gradient(180deg, #0b3f74 0%, #0f5aa3 55%, #0b3f74 100%);
+      radial-gradient(1200px 800px at 20% 10%, rgba(79,195,247,0.18), transparent 60%),
+      radial-gradient(1100px 700px at 85% 35%, rgba(30,136,229,0.16), transparent 62%),
+      linear-gradient(180deg, #08325e 0%, #0a4a88 55%, #08325e 100%);
   }
 
+  /* map stays visible */
   body::before{
     content:"";
     position:fixed;
@@ -41,19 +43,21 @@
     background-size:cover;
     background-position:center;
     background-repeat:no-repeat;
-    opacity:0.22;
+    opacity:0.24; /* slightly stronger for visibility */
     filter: hue-rotate(190deg) saturate(1.25) contrast(1.02);
     transform: scale(1.02);
     pointer-events:none;
     z-index:0;
   }
+
+  /* ✅ darker veil overlay (still light enough to see map) */
   body::after{
     content:"";
     position:fixed;
     inset:0;
     background:
-      radial-gradient(900px 520px at 50% 35%, rgba(234,246,255,0.10), transparent 70%),
-      linear-gradient(180deg, rgba(234,246,255,0.04), rgba(0,0,0,0.06));
+      radial-gradient(900px 520px at 50% 35%, rgba(234,246,255,0.08), transparent 70%),
+      linear-gradient(180deg, rgba(0,0,0,0.12), rgba(0,0,0,0.20));
     backdrop-filter: blur(1px);
     pointer-events:none;
     z-index:1;
@@ -79,13 +83,13 @@
       radial-gradient(circle at 60% 45%, rgba(234,246,255,0.32), transparent 58%),
       radial-gradient(circle at 45% 65%, rgba(234,246,255,0.36), transparent 60%);
     filter: blur(2px);
-    opacity: 0.58;
+    opacity: 0.55;
     animation: cloudDrift linear infinite;
   }
   .cloud.c1{ top: 8%;  left: -35%; animation-duration: 34s; animation-delay:-8s; transform: scale(1.05); }
-  .cloud.c2{ top: 22%; left: -50%; animation-duration: 42s; animation-delay:-18s; opacity:0.48; transform: scale(0.9); }
-  .cloud.c3{ top: 54%; left: -45%; animation-duration: 38s; animation-delay:-12s; opacity:0.52; transform: scale(1.18); }
-  .cloud.c4{ top: 74%; left: -55%; animation-duration: 46s; animation-delay:-25s; opacity:0.42; transform: scale(0.85); }
+  .cloud.c2{ top: 22%; left: -50%; animation-duration: 42s; animation-delay:-18s; opacity:0.46; transform: scale(0.9); }
+  .cloud.c3{ top: 54%; left: -45%; animation-duration: 38s; animation-delay:-12s; opacity:0.50; transform: scale(1.18); }
+  .cloud.c4{ top: 74%; left: -55%; animation-duration: 46s; animation-delay:-25s; opacity:0.40; transform: scale(0.85); }
 
   @keyframes cloudDrift{
     0%   { transform: translateX(-160px) translateY(0) scale(1); }
@@ -101,7 +105,6 @@
     pointer-events:none;
   }
 
-  /* Ellipse path container */
   .loop{
     position:absolute;
     left:50%;
@@ -126,6 +129,7 @@
     top: 0%;
     transform: translate(-50%, -50%);
     font-size: clamp(40px, 4.4vw, 82px);
+    opacity: 0.85;
     filter: drop-shadow(0 18px 28px rgba(0,0,0,0.26));
   }
 
@@ -134,12 +138,11 @@
     to   { transform: rotate(360deg); }
   }
 
-  /* Smaller loops in corners so it feels “alive” */
   .mini-loop{
     position:absolute;
     width: 34vmax;
     height: 24vmax;
-    opacity:0.65;
+    opacity:0.62;
   }
   .mini-loop .orbit{ animation: spin 14s linear infinite; }
   .mini-loop .plane{ font-size: clamp(28px, 3.2vw, 58px); }
@@ -191,13 +194,13 @@
     z-index:0;
   }
 
-  /* ✅ travel emojis inside machine (more + clearer) */
+  /* ✅ travel emojis inside machine */
   .inner-stickers{
     position:absolute;
     inset:0;
     pointer-events:none;
     z-index:1;
-    opacity:0.22; /* stronger than before */
+    opacity:0.22;
   }
   .inner-stickers span{
     position:absolute;
@@ -238,7 +241,7 @@
     font-size: clamp(12px, 1.4vw, 14px);
   }
 
-  /* ✅ display panel: NOT white — tinted blue glass */
+  /* display panel (tinted blue) */
   .screen{
     position:relative;
     z-index:4;
@@ -246,7 +249,7 @@
     margin: 0 auto 10px;
     padding: 14px 16px;
     border-radius: 20px;
-    color: #eaf6ff;   /* light text */
+    color: #eaf6ff;
     text-align:center;
 
     background:
@@ -271,11 +274,35 @@
     opacity:0.85;
     pointer-events:none;
   }
+
+  /* ✅ emojis inside the display panel (your screenshot area) */
+  .screen-emojis{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    z-index:1;
+    opacity:0.20;
+  }
+  .screen-emojis span{
+    position:absolute;
+    left: var(--x);
+    top: var(--y);
+    transform: rotate(var(--r)) scale(0.95);
+    font-size: clamp(16px, 1.8vw, 22px);
+    filter: drop-shadow(0 10px 16px rgba(0,0,0,0.25));
+    animation: emojiFloat 3.8s ease-in-out infinite;
+    animation-delay: var(--d);
+  }
+  @keyframes emojiFloat{
+    0%,100% { transform: translateY(0) rotate(var(--r)) scale(0.95); opacity:0.75; }
+    50%     { transform: translateY(-8px) rotate(var(--r)) scale(1.02); opacity:1; }
+  }
+
   .screen p{
     margin: 6px 0;
     font-weight:800;
     position:relative;
-    z-index:2;
+    z-index:2; /* above panel emojis */
     font-size: clamp(12px, 1.35vw, 14px);
   }
   #balance{ color: #bfe6ff; font-size: clamp(16px, 1.8vw, 20px); font-weight:900; }
@@ -500,7 +527,7 @@
     box-shadow:0 16px 30px rgba(0,0,0,0.18), 0 0 44px rgba(79,195,247,0.20);
   }
 
-  /* Receipt modal (unchanged) */
+  /* Receipt modal */
   .modal-backdrop{
     position:fixed;
     inset:0;
@@ -592,40 +619,23 @@
     <div class="cloud c4"></div>
   </div>
 
-  <!-- ✅ LOOP planes -->
+  <!-- LOOP planes -->
   <div class="loop-wrap" aria-hidden="true">
-    <!-- big central loop -->
     <div class="loop">
-      <div class="orbit">
-        <div class="plane">✈️</div>
-      </div>
-      <div class="orbit slow reverse">
-        <div class="plane">🛩️</div>
-      </div>
-      <div class="orbit slower">
-        <div class="plane">✈️</div>
-      </div>
+      <div class="orbit"><div class="plane">✈️</div></div>
+      <div class="orbit slow reverse"><div class="plane">🛩️</div></div>
+      <div class="orbit slower"><div class="plane">✈️</div></div>
     </div>
 
-    <!-- corner mini loops -->
-    <div class="mini-loop ml1">
-      <div class="orbit"><div class="plane">🛩️</div></div>
-    </div>
-    <div class="mini-loop ml2">
-      <div class="orbit reverse"><div class="plane">✈️</div></div>
-    </div>
-    <div class="mini-loop ml3">
-      <div class="orbit slow"><div class="plane">✈️</div></div>
-    </div>
-    <div class="mini-loop ml4">
-      <div class="orbit slow reverse"><div class="plane">🛩️</div></div>
-    </div>
+    <div class="mini-loop ml1"><div class="orbit"><div class="plane">🛩️</div></div></div>
+    <div class="mini-loop ml2"><div class="orbit reverse"><div class="plane">✈️</div></div></div>
+    <div class="mini-loop ml3"><div class="orbit slow"><div class="plane">✈️</div></div></div>
+    <div class="mini-loop ml4"><div class="orbit slow reverse"><div class="plane">🛩️</div></div></div>
   </div>
 
   <div class="vending-container" id="machine">
     <div class="shine"></div>
 
-    <!-- ✅ travel stickers inside machine -->
     <div class="inner-stickers" aria-hidden="true">
       <span class="st1">🗺️</span>
       <span class="st2">🧳</span>
@@ -643,6 +653,16 @@
     </div>
 
     <div class="screen" id="screenBox">
+      <!-- ✅ emojis inside the display panel -->
+      <div class="screen-emojis" aria-hidden="true">
+        <span style="--x:8%;  --y:22%; --r:-14deg; --d:0s;">🧳</span>
+        <span style="--x:14%; --y:62%; --r:10deg;  --d:-1.2s;">🗺️</span>
+        <span style="--x:28%; --y:14%; --r:8deg;   --d:-0.6s;">📍</span>
+        <span style="--x:72%; --y:18%; --r:-8deg;  --d:-1.6s;">🛫</span>
+        <span style="--x:86%; --y:40%; --r:12deg;  --d:-0.9s;">📸</span>
+        <span style="--x:80%; --y:72%; --r:-10deg; --d:-1.3s;">🧭</span>
+      </div>
+
       <p><strong>Balance:</strong> <span id="balance">0</span> NTD</p>
       <p id="inserted-coins">Inserted coins: 0</p>
       <p id="total">Total Selected: 0 NTD</p>
