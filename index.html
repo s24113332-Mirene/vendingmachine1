@@ -8,34 +8,34 @@
 
 <style>
   :root{
-    --navy:#061a2f;
     --mid:#0b4fa8;
     --blue:#1e88e5;
     --sky:#4fc3f7;
     --ice:#eaf6ff;
-    --shadow: rgba(0,0,0,0.28);
+    --shadow: rgba(0,0,0,0.18);
     --glow: rgba(79,195,247,0.45);
     --good: rgba(34,197,94,0.55);
   }
 
-  /* One-screen layout */
   html, body { height: 100%; }
   body{
     margin:0;
     height: 100vh;
-    overflow: hidden; /* no page scroll */
+    overflow: hidden; /* one screen */
     display:flex;
     justify-content:center;
     align-items:center;
     font-family:'Poppins',sans-serif;
     position:relative;
 
+    /* lighter so the map stays visible */
     background:
-      radial-gradient(1200px 800px at 20% 10%, rgba(79,195,247,0.25), transparent 60%),
-      radial-gradient(1100px 700px at 85% 35%, rgba(30,136,229,0.20), transparent 62%),
-      linear-gradient(180deg, #061a2f 0%, #0a2b4b 48%, #061a2f 100%);
+      radial-gradient(1200px 800px at 20% 10%, rgba(79,195,247,0.28), transparent 60%),
+      radial-gradient(1100px 700px at 85% 35%, rgba(30,136,229,0.22), transparent 62%),
+      linear-gradient(180deg, #0b3f74 0%, #0f5aa3 55%, #0b3f74 100%);
   }
 
+  /* map: more visible */
   body::before{
     content:"";
     position:fixed;
@@ -44,26 +44,27 @@
     background-size:cover;
     background-position:center;
     background-repeat:no-repeat;
-    opacity:0.10;
-    filter: hue-rotate(190deg) saturate(1.35) contrast(1.05);
+    opacity:0.22; /* increased visibility */
+    filter: hue-rotate(190deg) saturate(1.25) contrast(1.02);
     transform: scale(1.02);
     pointer-events:none;
     z-index:0;
   }
+
+  /* soft haze only (no heavy dark vignette) */
   body::after{
     content:"";
     position:fixed;
     inset:0;
     background:
-      radial-gradient(900px 520px at 50% 35%, rgba(234,246,255,0.10), transparent 70%),
-      radial-gradient(1400px 900px at 50% 50%, transparent 55%, rgba(0,0,0,0.35) 100%),
-      linear-gradient(180deg, rgba(234,246,255,0.05), rgba(0,0,0,0.20));
-    backdrop-filter: blur(1.2px);
+      radial-gradient(900px 520px at 50% 35%, rgba(234,246,255,0.12), transparent 70%),
+      linear-gradient(180deg, rgba(234,246,255,0.06), rgba(0,0,0,0.08));
+    backdrop-filter: blur(1px);
     pointer-events:none;
     z-index:1;
   }
 
-  /* ✈️ More planes (bigger + more visible) */
+  /* Background layer */
   .sky-layer{
     position:fixed;
     inset:0;
@@ -72,68 +73,103 @@
     overflow:hidden;
   }
 
+  /* ✅ moving clouds */
+  .cloud{
+    position:absolute;
+    width: clamp(220px, 24vw, 460px);
+    height: clamp(90px, 9vw, 170px);
+    border-radius: 999px;
+    background:
+      radial-gradient(circle at 30% 55%, rgba(234,246,255,0.38), transparent 55%),
+      radial-gradient(circle at 60% 45%, rgba(234,246,255,0.32), transparent 58%),
+      radial-gradient(circle at 45% 65%, rgba(234,246,255,0.36), transparent 60%);
+    filter: blur(2px);
+    opacity: 0.58;
+    animation: cloudDrift linear infinite;
+  }
+  .cloud.c1{ top: 8%;  left: -35%; animation-duration: 34s; animation-delay:-8s; transform: scale(1.05); }
+  .cloud.c2{ top: 22%; left: -50%; animation-duration: 42s; animation-delay:-18s; opacity:0.48; transform: scale(0.9); }
+  .cloud.c3{ top: 54%; left: -45%; animation-duration: 38s; animation-delay:-12s; opacity:0.52; transform: scale(1.18); }
+  .cloud.c4{ top: 74%; left: -55%; animation-duration: 46s; animation-delay:-25s; opacity:0.42; transform: scale(0.85); }
+
+  @keyframes cloudDrift{
+    0%   { transform: translateX(-160px) translateY(0) scale(1); }
+    50%  { transform: translateX(55vw) translateY(-10px) scale(1); }
+    100% { transform: translateX(calc(100vw + 520px)) translateY(0) scale(1); }
+  }
+
+  /* ✅ planes: multiple patterns, not one direction */
   .plane{
     position:absolute;
-    font-size: clamp(38px, 4.2vw, 76px);  /* bigger */
-    opacity:0.82;                         /* more visible */
-    filter: drop-shadow(0 18px 28px rgba(0,0,0,0.32));
+    font-size: clamp(40px, 4.4vw, 82px);
+    opacity:0.86;
+    filter: drop-shadow(0 18px 28px rgba(0,0,0,0.26));
     will-change: transform;
     user-select:none;
   }
 
-  /* Sine left->right */
-  .p-sine{ left:-25%; top:10%; animation: planeSine 14s linear infinite; }
-  .p-sine2{ left:-30%; top:22%; opacity:0.70; font-size: clamp(34px, 3.8vw, 68px); animation: planeSine 18s linear infinite; animation-delay:-8s; }
-  .p-sine3{ left:-28%; top:40%; opacity:0.72; font-size: clamp(32px, 3.6vw, 64px); animation: planeSine 16s linear infinite; animation-delay:-4s; }
-  .p-sine4{ left:-35%; top:62%; opacity:0.62; font-size: clamp(30px, 3.4vw, 60px); animation: planeSine 22s linear infinite; animation-delay:-14s; }
-  .p-sine5{ left:-26%; top:78%; opacity:0.58; font-size: clamp(28px, 3.2vw, 56px); animation: planeSine 20s linear infinite; animation-delay:-10s; }
+  /* left -> right (sine) */
+  .p-sine1{ left:-25%; top:10%; animation: planeSine 14s linear infinite; }
+  .p-sine2{ left:-30%; top:28%; opacity:0.72; font-size: clamp(34px, 3.8vw, 70px); animation: planeSine 18s linear infinite; animation-delay:-7s; }
+  .p-sine3{ left:-28%; top:68%; opacity:0.70; font-size: clamp(32px, 3.6vw, 66px); animation: planeSine 16s linear infinite; animation-delay:-3s; }
 
   @keyframes planeSine{
-    0%   { transform: translateX(-260px) translateY(0) rotate(-12deg); }
-    25%  { transform: translateX(28vw) translateY(-22px) rotate(-6deg); }
+    0%   { transform: translateX(-280px) translateY(0) rotate(-10deg); }
+    25%  { transform: translateX(28vw) translateY(-22px) rotate(-5deg); }
     50%  { transform: translateX(55vw) translateY(18px) rotate(0deg); }
     75%  { transform: translateX(82vw) translateY(-18px) rotate(6deg); }
-    100% { transform: translateX(calc(100vw + 300px)) translateY(0) rotate(12deg); }
+    100% { transform: translateX(calc(100vw + 320px)) translateY(0) rotate(12deg); }
   }
 
-  /* Right->left */
-  .p-rl1{ right:-25%; top:16%; animation: planeRL 20s linear infinite; transform: rotate(180deg); opacity:0.68; }
-  .p-rl2{ right:-30%; top:54%; animation: planeRL 26s linear infinite; transform: rotate(180deg); opacity:0.56; font-size: clamp(30px, 3.4vw, 60px); animation-delay:-9s; }
-  .p-rl3{ right:-35%; top:86%; animation: planeRL 30s linear infinite; transform: rotate(180deg); opacity:0.48; font-size: clamp(26px, 3vw, 52px); animation-delay:-16s; }
+  /* right -> left */
+  .p-rl1{ right:-25%; top:18%; animation: planeRL 20s linear infinite; transform: rotate(180deg); opacity:0.72; }
+  .p-rl2{ right:-30%; top:82%; animation: planeRL 28s linear infinite; transform: rotate(180deg); opacity:0.55; font-size: clamp(30px, 3.4vw, 62px); animation-delay:-12s; }
 
   @keyframes planeRL{
-    0%   { transform: translateX(0) translateY(0) rotate(190deg); }
-    25%  { transform: translateX(-25vw) translateY(18px) rotate(184deg); }
+    0%   { transform: translateX(0) translateY(0) rotate(188deg); }
+    25%  { transform: translateX(-25vw) translateY(18px) rotate(182deg); }
     50%  { transform: translateX(-52vw) translateY(-14px) rotate(180deg); }
     75%  { transform: translateX(-78vw) translateY(16px) rotate(176deg); }
-    100% { transform: translateX(calc(-100vw - 420px)) translateY(0) rotate(170deg); }
+    100% { transform: translateX(calc(-100vw - 460px)) translateY(0) rotate(170deg); }
   }
 
-  /* Figure-eight (∞) around center */
-  .p-eight{
-    left:50%;
-    top:50%;
+  /* diagonal top-left -> bottom-right */
+  .p-diag1{ left:-20%; top:-10%; animation: diagDown 18s linear infinite; opacity:0.72; }
+  @keyframes diagDown{
+    0%   { transform: translate(-120px, -60px) rotate(30deg); }
+    100% { transform: translate(calc(100vw + 520px), calc(100vh + 260px)) rotate(40deg); }
+  }
+
+  /* diagonal bottom-left -> top-right */
+  .p-diag2{ left:-25%; bottom:-18%; animation: diagUp 22s linear infinite; opacity:0.62; font-size: clamp(32px, 3.8vw, 70px); }
+  @keyframes diagUp{
+    0%   { transform: translate(-120px, 120px) rotate(-30deg); }
+    100% { transform: translate(calc(100vw + 520px), -420px) rotate(-10deg); }
+  }
+
+  /* figure-eight */
+  .p-eight1{
+    left:50%; top:50%;
     transform: translate(-50%,-50%);
     animation: figureEight 18s linear infinite;
     opacity:0.55;
   }
   .p-eight2{
-    left:50%;
-    top:50%;
+    left:50%; top:50%;
     transform: translate(-50%,-50%);
     animation: figureEight 26s linear infinite reverse;
     opacity:0.38;
-    font-size: clamp(30px, 3.4vw, 60px);
+    font-size: clamp(30px, 3.4vw, 62px);
   }
   @keyframes figureEight{
     0%   { transform: translate(-50%,-50%) translate(0,0) rotate(0deg); }
-    25%  { transform: translate(-50%,-50%) translate(280px,-110px) rotate(14deg); }
-    50%  { transform: translate(-50%,-50%) translate(0,-12px) rotate(0deg); }
-    75%  { transform: translate(-50%,-50%) translate(-280px,110px) rotate(-14deg); }
+    25%  { transform: translate(-50%,-50%) translate(300px,-120px) rotate(14deg); }
+    50%  { transform: translate(-50%,-50%) translate(0,-10px) rotate(0deg); }
+    75%  { transform: translate(-50%,-50%) translate(-300px,120px) rotate(-14deg); }
     100% { transform: translate(-50%,-50%) translate(0,0) rotate(0deg); }
   }
 
-  /* Orbit */
+  /* orbit */
   .orbit-wrap{
     position:fixed;
     left:50%;
@@ -142,26 +178,25 @@
     height: 120vmax;
     transform: translate(-50%, -50%);
     z-index:2;
-    opacity:0.30;
+    opacity:0.26;
     pointer-events:none;
   }
   .orbit{ position:absolute; inset:0; animation: orbit 28s linear infinite; }
-  .orbit2{ animation-duration: 40s; animation-direction: reverse; opacity:0.22; }
-  .orbit3{ animation-duration: 56s; opacity:0.18; }
+  .orbit2{ animation-duration: 42s; animation-direction: reverse; opacity:0.20; }
   .orb-plane{
     position:absolute;
     left: 50%;
     top: 2%;
     transform: translateX(-50%);
-    font-size: clamp(32px, 3.8vw, 70px);
-    filter: drop-shadow(0 18px 28px rgba(0,0,0,0.28));
+    font-size: clamp(32px, 3.8vw, 72px);
+    filter: drop-shadow(0 18px 28px rgba(0,0,0,0.24));
   }
   @keyframes orbit{ from{ transform: rotate(0deg); } to{ transform: rotate(360deg); } }
 
-  /* 💼 Vending container (3-gradient) */
+  /* vending machine */
   .vending-container{
     width: min(980px, 94vw);
-    max-height: 92vh;                 /* keep inside one screen */
+    max-height: 92vh;
     padding: clamp(14px, 2vh, 24px);
     border-radius: 30px;
     color: #fff;
@@ -169,11 +204,12 @@
     z-index:5;
     overflow:hidden;
 
+    /* 3-gradient body */
     background:
-      radial-gradient(900px 500px at 12% 0%, rgba(79,195,247,0.30), transparent 55%),
-      linear-gradient(145deg, #071f3a 0%, #0b4fa8 50%, #4fc3f7 100%);
+      radial-gradient(900px 500px at 12% 0%, rgba(79,195,247,0.28), transparent 55%),
+      linear-gradient(145deg, #0a2a4a 0%, #0b4fa8 50%, #4fc3f7 100%);
     border: 6px solid rgba(125, 211, 252, 0.55);
-    box-shadow: 0 26px 80px rgba(0,0,0,0.28), 0 0 60px rgba(79,195,247,0.20);
+    box-shadow: 0 22px 70px rgba(0,0,0,0.22), 0 0 60px rgba(79,195,247,0.18);
   }
 
   .vending-container::before{
@@ -186,31 +222,51 @@
     height: 40px;
     background: linear-gradient(90deg, rgba(79,195,247,0.95), rgba(30,136,229,0.95));
     border-radius: 22px 22px 0 0;
-    box-shadow: 0 12px 20px rgba(0,0,0,0.22);
+    box-shadow: 0 12px 20px rgba(0,0,0,0.18);
     border: 3px solid rgba(234,246,255,0.25);
-    z-index:2;
+    z-index:3;
   }
 
   .shine{
     position:absolute;
     inset:-40% -20% auto -30%;
     height: 70%;
-    background: linear-gradient(120deg, rgba(255,255,255,0.16), rgba(255,255,255,0) 55%);
+    background: linear-gradient(120deg, rgba(255,255,255,0.14), rgba(255,255,255,0) 55%);
     transform: rotate(12deg);
     pointer-events:none;
     z-index:0;
   }
 
-  /* Centered header */
+  /* ✅ stickers/emoji INSIDE the vending machine */
+  .inner-stickers{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    z-index:1;
+    opacity:0.18;
+  }
+  .inner-stickers span{
+    position:absolute;
+    font-size: clamp(26px, 3vw, 54px);
+    transform: rotate(var(--r, 0deg));
+    filter: drop-shadow(0 10px 18px rgba(0,0,0,0.18));
+  }
+  .st1{ top: 10%; left: 6%;  --r:-14deg; }
+  .st2{ top: 18%; right: 8%; --r:10deg; }
+  .st3{ top: 48%; left: 10%; --r:12deg; }
+  .st4{ bottom: 16%; right: 10%; --r:-10deg; }
+  .st5{ bottom: 24%; left: 46%; --r:8deg; }
+  .st6{ top: 62%; right: 36%; --r:-12deg; }
+
   .header{
     position:relative;
-    z-index:3;
+    z-index:4;
     text-align:center;
     padding: 12px 14px;
     border-radius: 16px;
     background: linear-gradient(90deg, rgba(234,246,255,0.14), rgba(79,195,247,0.14), rgba(234,246,255,0.08));
     border: 1px solid rgba(234,246,255,0.20);
-    box-shadow: 0 0 18px rgba(79,195,247,0.16);
+    box-shadow: 0 0 18px rgba(79,195,247,0.14);
     margin-bottom: 10px;
   }
   .header h1{
@@ -226,26 +282,28 @@
     font-size: clamp(12px, 1.4vw, 14px);
   }
 
-  /* ✅ Text box: add a visible gradient like your screenshot */
+  /* ✅ better gradient for display panel */
   .screen{
     position:relative;
-    z-index:3;
+    z-index:4;
     width: min(820px, 100%);
     margin: 0 auto 10px;
-    padding: 12px 14px;
-    border-radius: 18px;
+    padding: 14px 16px;
+    border-radius: 20px;
     color: #08233f;
     text-align:center;
-
-    /* Gradient panel */
     background:
-      radial-gradient(900px 260px at 20% 0%, rgba(255,255,255,0.55), rgba(255,255,255,0) 60%),
-      linear-gradient(135deg, rgba(245,252,255,0.96) 0%, rgba(214,238,255,0.92) 45%, rgba(194,227,255,0.90) 100%);
-    border: 1px solid rgba(234,246,255,0.78);
+      radial-gradient(900px 260px at 15% 0%, rgba(255,255,255,0.62), rgba(255,255,255,0) 60%),
+      linear-gradient(135deg,
+        rgba(248,253,255,0.96) 0%,
+        rgba(224,244,255,0.94) 38%,
+        rgba(197,230,255,0.92) 70%,
+        rgba(176,221,255,0.90) 100%);
+    border: 1px solid rgba(234,246,255,0.86);
     box-shadow:
-      0 14px 34px rgba(0,0,0,0.18),
-      0 0 26px rgba(79,195,247,0.18),
-      inset 0 0 0 1px rgba(255,255,255,0.35);
+      0 16px 38px rgba(0,0,0,0.14),
+      0 0 30px rgba(79,195,247,0.18),
+      inset 0 0 0 1px rgba(255,255,255,0.42);
     backdrop-filter: blur(10px);
     overflow:hidden;
   }
@@ -253,8 +311,8 @@
     content:"";
     position:absolute;
     inset:0;
-    background: linear-gradient(115deg, rgba(255,255,255,0.20), rgba(255,255,255,0) 60%);
-    opacity:0.75;
+    background: linear-gradient(115deg, rgba(255,255,255,0.22), rgba(255,255,255,0) 60%);
+    opacity:0.8;
     pointer-events:none;
   }
   .screen p{
@@ -268,7 +326,7 @@
   #inserted-coins{ color: var(--blue); font-style: italic; font-weight:800; }
   #message{ white-space: pre-line; }
 
-  /* Center overlays */
+  /* overlay messages */
   .center-message{
     pointer-events:none;
     position:absolute;
@@ -288,20 +346,6 @@
     filter: drop-shadow(0 18px 30px rgba(0,0,0,0.18));
   }
   .center-message.show{ animation: popGlow 1.35s ease forwards; }
-  .center-message::after{
-    content:"";
-    position:absolute;
-    inset:-10px;
-    border-radius: 22px;
-    background:
-      radial-gradient(circle at 20% 30%, rgba(255,255,255,0.55), transparent 40%),
-      radial-gradient(circle at 70% 20%, rgba(255,255,255,0.45), transparent 42%),
-      radial-gradient(circle at 80% 70%, rgba(255,255,255,0.40), transparent 45%),
-      radial-gradient(circle at 30% 80%, rgba(255,255,255,0.35), transparent 45%);
-    opacity:0;
-    animation: twinkle 1.35s ease forwards;
-    pointer-events:none;
-  }
   @keyframes popGlow{
     0%   { opacity:0; transform: translate(-50%, -50%) scale(0.82); }
     16%  { opacity:1; transform: translate(-50%, -50%) scale(1.06); }
@@ -309,14 +353,11 @@
     62%  { transform: translate(-50%, -50%) scale(1.02); }
     100% { opacity:0; transform: translate(-50%, -50%) scale(1.00); }
   }
-  @keyframes twinkle{ 0%{opacity:0;} 20%{opacity:0.75;} 100%{opacity:0;} }
-
   #dispense-msg{ background: linear-gradient(45deg, rgba(30,136,229,0.95), rgba(79,195,247,0.95)); color:#fff; border:1px solid rgba(234,246,255,0.35); }
   #success-msg{ background: linear-gradient(45deg, rgba(34,197,94,0.92), rgba(125,211,252,0.92)); color:#06213a; border:1px solid rgba(234,246,255,0.35); }
   #error-msg{ background: linear-gradient(45deg, rgba(239,68,68,0.92), rgba(245,158,11,0.92)); color:#061a2f; border:1px solid rgba(234,246,255,0.35); }
 
-  /* Coin buttons (compact) */
-  .coin-section{ position:relative; z-index:3; text-align:center; }
+  .coin-section{ position:relative; z-index:4; text-align:center; }
   .coin-section h3{ margin: 8px 0 8px; font-weight:900; font-size: clamp(12px, 1.4vw, 14px); }
   .coin-buttons{
     display:flex;
@@ -333,34 +374,29 @@
     cursor:pointer;
     color:#06213a;
     background: linear-gradient(45deg, rgba(234,246,255,0.92), rgba(125,211,252,0.90));
-    box-shadow: 0 10px 22px rgba(0,0,0,0.16), 0 0 30px rgba(79,195,247,0.22);
+    box-shadow: 0 10px 22px rgba(0,0,0,0.14), 0 0 30px rgba(79,195,247,0.18);
     transition: transform .18s ease, box-shadow .18s ease;
   }
   .coin-buttons button:hover{
     transform: translateY(-2px) scale(1.04);
-    box-shadow:0 16px 30px rgba(0,0,0,0.20), 0 0 42px rgba(79,195,247,0.26);
+    box-shadow:0 16px 30px rgba(0,0,0,0.18), 0 0 42px rgba(79,195,247,0.22);
   }
 
-  /* Products grid: 4 columns desktop so it fits in one screen */
   .product-section{
     position:relative;
-    z-index:3;
+    z-index:4;
     display:grid;
     grid-template-columns: repeat(4, minmax(0,1fr));
     gap: 10px;
     margin-top: 10px;
   }
-  @media (max-width: 900px){
-    .product-section{ grid-template-columns: repeat(3, minmax(0,1fr)); }
-  }
-  @media (max-width: 680px){
-    .product-section{ grid-template-columns: repeat(2, minmax(0,1fr)); }
-  }
+  @media (max-width: 900px){ .product-section{ grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 680px){ .product-section{ grid-template-columns: repeat(2, 1fr); } }
 
   .product{
     position:relative;
     border-radius: 14px;
-    padding: 10px 10px 10px;
+    padding: 10px;
     text-align:center;
     user-select:none;
     overflow:hidden;
@@ -369,30 +405,29 @@
     background:
       radial-gradient(280px 160px at 20% 0%, rgba(255,255,255,0.16), transparent 55%),
       linear-gradient(180deg, rgba(234,246,255,0.12), rgba(125,211,252,0.08));
-    box-shadow: inset 0 0 0 2px rgba(11,42,74,0.10), 0 10px 18px rgba(0,0,0,0.16);
+    box-shadow: inset 0 0 0 2px rgba(11,42,74,0.10), 0 10px 18px rgba(0,0,0,0.14);
     transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, opacity .18s ease, filter .18s ease;
     min-height: 130px;
   }
-
   .product.enabled{ cursor:pointer; }
   .product:hover.enabled{
     transform: translateY(-2px) scale(1.01);
-    box-shadow: 0 16px 26px rgba(0,0,0,0.20), 0 0 30px rgba(79,195,247,0.18);
+    box-shadow: 0 16px 26px rgba(0,0,0,0.18), 0 0 30px rgba(79,195,247,0.16);
     border-color: rgba(125,211,252,0.55);
   }
   .product.selected{
     border-color: rgba(125,211,252,0.75);
-    box-shadow: 0 18px 30px rgba(0,0,0,0.22), 0 0 40px rgba(79,195,247,0.22);
+    box-shadow: 0 18px 30px rgba(0,0,0,0.20), 0 0 40px rgba(79,195,247,0.18);
   }
 
-  /* ✅ Glow products the user can afford (based on remaining balance) */
+  /* affordable glow */
   .product.affordable:not(.selected):not(.soldout){
     border-color: rgba(34,197,94,0.75);
     box-shadow:
-      0 18px 30px rgba(0,0,0,0.20),
+      0 18px 30px rgba(0,0,0,0.18),
       0 0 26px rgba(34,197,94,0.30),
       0 0 46px rgba(34,197,94,0.18);
-    filter: saturate(1.05);
+    filter: saturate(1.06);
   }
   .product.affordable:not(.selected):not(.soldout)::after{
     content:"";
@@ -400,16 +435,11 @@
     inset:-2px;
     border-radius: 16px;
     background: radial-gradient(circle at 30% 20%, rgba(34,197,94,0.22), transparent 55%);
-    opacity:0.8;
+    opacity:0.85;
     pointer-events:none;
   }
 
-  .product.soldout{
-    opacity:0.55;
-    filter: grayscale(0.25);
-    cursor:not-allowed !important;
-  }
-
+  .product.soldout{ opacity:0.55; filter: grayscale(0.25); cursor:not-allowed !important; }
   .stock-badge{
     position:absolute;
     top: 8px;
@@ -425,7 +455,6 @@
   }
   .stock-badge.low{ background: rgba(245,158,11,0.18); border-color: rgba(245,158,11,0.35); }
   .stock-badge.zero{ background: rgba(239,68,68,0.18); border-color: rgba(239,68,68,0.35); }
-
   .soldout-overlay{
     position:absolute;
     inset:0;
@@ -462,7 +491,7 @@
     color: #06213a;
     font-weight: 1000;
     cursor:pointer;
-    box-shadow: 0 8px 14px rgba(0,0,0,0.12);
+    box-shadow: 0 8px 14px rgba(0,0,0,0.10);
     transition: transform .12s ease;
   }
   .qty-btn:active{ transform: scale(0.95); }
@@ -478,15 +507,26 @@
     font-size: 12px;
   }
 
-  /* Action buttons (compact) */
+  /* ✅ confirm purchase centered */
   .action-buttons{
     position:relative;
-    z-index:3;
+    z-index:4;
     display:flex;
-    flex-wrap:wrap;
-    justify-content:center;
+    flex-direction:column;
+    align-items:center;
     gap: 10px;
     margin-top: 10px;
+  }
+  .action-buttons .primary{
+    width: min(360px, 92%);
+    text-align:center;
+    font-size: 14px;
+  }
+  .action-buttons .secondary-row{
+    display:flex;
+    gap: 10px;
+    justify-content:center;
+    flex-wrap:wrap;
   }
   .action-buttons button{
     font-size: 13px;
@@ -497,19 +537,19 @@
     border: 1px solid rgba(234,246,255,0.26);
     color: #06213a;
     background: linear-gradient(45deg, rgba(234,246,255,0.92), rgba(125,211,252,0.90));
-    box-shadow: 0 12px 24px rgba(0,0,0,0.16), 0 0 36px rgba(79,195,247,0.18);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.14), 0 0 36px rgba(79,195,247,0.16);
     transition: transform .18s ease, box-shadow .18s ease;
   }
   .action-buttons button:hover{
     transform: translateY(-2px) scale(1.03);
-    box-shadow:0 16px 30px rgba(0,0,0,0.20), 0 0 44px rgba(79,195,247,0.22);
+    box-shadow:0 16px 30px rgba(0,0,0,0.18), 0 0 44px rgba(79,195,247,0.20);
   }
 
   /* Receipt modal */
   .modal-backdrop{
     position:fixed;
     inset:0;
-    background: rgba(0,0,0,0.45);
+    background: rgba(0,0,0,0.40);
     display:none;
     align-items:center;
     justify-content:center;
@@ -523,7 +563,7 @@
     border-radius: 18px;
     background: rgba(234,246,255,0.92);
     border: 1px solid rgba(234,246,255,0.75);
-    box-shadow: 0 30px 90px rgba(0,0,0,0.35);
+    box-shadow: 0 30px 90px rgba(0,0,0,0.30);
     color:#06213a;
     overflow:hidden;
   }
@@ -582,9 +622,8 @@
     100%{ transform: translateY(110vh) rotate(420deg); opacity:0; }
   }
 
-  /* Reduce motion */
   @media (prefers-reduced-motion: reduce){
-    .plane, .orbit { animation:none !important; }
+    .plane, .orbit, .cloud { animation:none !important; }
     .center-message.show{ animation:none !important; opacity:0 !important; }
   }
 </style>
@@ -593,29 +632,44 @@
 <body>
 
   <div class="sky-layer" aria-hidden="true">
-    <!-- more planes -->
-    <div class="plane p-sine">✈️</div>
+    <!-- clouds -->
+    <div class="cloud c1"></div>
+    <div class="cloud c2"></div>
+    <div class="cloud c3"></div>
+    <div class="cloud c4"></div>
+
+    <!-- planes: different patterns -->
+    <div class="plane p-sine1">✈️</div>
     <div class="plane p-sine2">🛩️</div>
     <div class="plane p-sine3">✈️</div>
-    <div class="plane p-sine4">🛩️</div>
-    <div class="plane p-sine5">✈️</div>
 
     <div class="plane p-rl1">✈️</div>
     <div class="plane p-rl2">🛩️</div>
-    <div class="plane p-rl3">✈️</div>
 
-    <div class="plane p-eight">✈️</div>
+    <div class="plane p-diag1">✈️</div>
+    <div class="plane p-diag2">🛩️</div>
+
+    <div class="plane p-eight1">✈️</div>
     <div class="plane p-eight2">🛩️</div>
 
     <div class="orbit-wrap">
       <div class="orbit"><div class="orb-plane">🛩️</div></div>
       <div class="orbit orbit2"><div class="orb-plane">✈️</div></div>
-      <div class="orbit orbit3"><div class="orb-plane">✈️</div></div>
     </div>
   </div>
 
   <div class="vending-container" id="machine">
     <div class="shine"></div>
+
+    <!-- stickers inside -->
+    <div class="inner-stickers" aria-hidden="true">
+      <span class="st1">🗺️</span>
+      <span class="st2">🧳</span>
+      <span class="st3">🧭</span>
+      <span class="st4">🌴</span>
+      <span class="st5">📍</span>
+      <span class="st6">🛫</span>
+    </div>
 
     <div class="header">
       <h1>Travel Vending Machine</h1>
@@ -750,10 +804,13 @@
       </div>
     </div>
 
+    <!-- ✅ Confirm Purchase centered -->
     <div class="action-buttons">
-      <button onclick="confirmPurchase()">🧾 Confirm Purchase</button>
-      <button onclick="returnChange()">💰 Return Change</button>
-      <button onclick="resetMachine()">🔄 Reset</button>
+      <button class="primary" onclick="confirmPurchase()">🧾 Confirm Purchase</button>
+      <div class="secondary-row">
+        <button onclick="returnChange()">💰 Return Change</button>
+        <button onclick="resetMachine()">🔄 Reset</button>
+      </div>
     </div>
   </div>
 
@@ -802,7 +859,6 @@
     return balance - currentTotal();
   }
 
-  // ✅ affordability glow uses remaining balance, not just raw balance
   function updateDisplay(){
     document.getElementById("balance").textContent = balance;
     document.getElementById("inserted-coins").textContent =
@@ -819,7 +875,6 @@
       const price = parseInt(card.dataset.price);
       const qty = parseInt(card.querySelector(".qty-val").textContent) || 0;
 
-      // sold out
       if(stock <= 0){
         card.classList.add("soldout");
         card.classList.remove("enabled","affordable");
@@ -829,15 +884,13 @@
         card.classList.toggle("enabled", balance > 0);
       }
 
-      // stock badge styling
       const badge = card.querySelector(".stock-badge");
       badge.classList.remove("low","zero");
       if(stock === 0) badge.classList.add("zero");
       else if(stock <= 2) badge.classList.add("low");
       card.querySelector(".stock").textContent = stock;
 
-      // ✅ glow if user can afford one more of this item with remaining coins
-      // (don’t glow if it’s already selected; selected already has its own highlight)
+      // glow if user can afford one more of this item with remaining balance
       if(!card.classList.contains("soldout") && qty === 0 && balance > 0 && price <= rem){
         card.classList.add("affordable");
       } else {
