@@ -27,14 +27,14 @@
     font-family:'Poppins',sans-serif;
     position:relative;
 
-    /* ✅ DARKENED a bit so it doesn't match the vending machine */
+    /* slightly darker background so it doesn't match the machine */
     background:
       radial-gradient(1200px 800px at 20% 10%, rgba(79,195,247,0.18), transparent 60%),
       radial-gradient(1100px 700px at 85% 35%, rgba(30,136,229,0.16), transparent 62%),
       linear-gradient(180deg, #08325e 0%, #0a4a88 55%, #08325e 100%);
   }
 
-  /* map stays visible */
+  /* world map */
   body::before{
     content:"";
     position:fixed;
@@ -43,14 +43,14 @@
     background-size:cover;
     background-position:center;
     background-repeat:no-repeat;
-    opacity:0.24; /* slightly stronger for visibility */
+    opacity:0.24;
     filter: hue-rotate(190deg) saturate(1.25) contrast(1.02);
     transform: scale(1.02);
     pointer-events:none;
     z-index:0;
   }
 
-  /* ✅ darker veil overlay (still light enough to see map) */
+  /* gentle darker veil (map still visible) */
   body::after{
     content:"";
     position:fixed;
@@ -63,7 +63,7 @@
     z-index:1;
   }
 
-  /* Background animations */
+  /* ===== BACKGROUND LAYER ===== */
   .sky-layer{
     position:fixed;
     inset:0;
@@ -72,39 +72,80 @@
     overflow:hidden;
   }
 
-  /* moving clouds */
+  /* ✅ MOVING CLOUDS (replaces oblongs) */
   .cloud{
     position:absolute;
-    width: clamp(220px, 24vw, 460px);
-    height: clamp(90px, 9vw, 170px);
+    width: clamp(240px, 26vw, 520px);
+    height: clamp(90px, 10vw, 190px);
     border-radius: 999px;
-    background:
-      radial-gradient(circle at 30% 55%, rgba(234,246,255,0.38), transparent 55%),
-      radial-gradient(circle at 60% 45%, rgba(234,246,255,0.32), transparent 58%),
-      radial-gradient(circle at 45% 65%, rgba(234,246,255,0.36), transparent 60%);
-    filter: blur(2px);
-    opacity: 0.55;
-    animation: cloudDrift linear infinite;
+
+    background: rgba(234,246,255,0.16);
+    box-shadow:
+      inset 0 -18px 30px rgba(255,255,255,0.10),
+      0 18px 40px rgba(0,0,0,0.10);
+    filter: blur(0.4px);
+    opacity: 0.62;
+
+    transform: translateX(-220px);
+    animation:
+      cloudDrift linear infinite,
+      cloudBob ease-in-out infinite;
   }
-  .cloud.c1{ top: 8%;  left: -35%; animation-duration: 34s; animation-delay:-8s; transform: scale(1.05); }
-  .cloud.c2{ top: 22%; left: -50%; animation-duration: 42s; animation-delay:-18s; opacity:0.46; transform: scale(0.9); }
-  .cloud.c3{ top: 54%; left: -45%; animation-duration: 38s; animation-delay:-12s; opacity:0.50; transform: scale(1.18); }
-  .cloud.c4{ top: 74%; left: -55%; animation-duration: 46s; animation-delay:-25s; opacity:0.40; transform: scale(0.85); }
+
+  /* puffy bumps */
+  .cloud::before,
+  .cloud::after{
+    content:"";
+    position:absolute;
+    background: rgba(234,246,255,0.18);
+    border-radius: 999px;
+    box-shadow: inset 0 -16px 24px rgba(255,255,255,0.10);
+  }
+  .cloud::before{
+    width: 46%;
+    height: 72%;
+    left: 10%;
+    top: -34%;
+  }
+  .cloud::after{
+    width: 54%;
+    height: 88%;
+    right: 12%;
+    top: -46%;
+  }
+  .cloud .puff{
+    position:absolute;
+    width: 30%;
+    height: 58%;
+    left: 42%;
+    top: -24%;
+    border-radius: 999px;
+    background: rgba(234,246,255,0.16);
+    box-shadow: inset 0 -12px 18px rgba(255,255,255,0.08);
+  }
+
+  .cloud.c1{ top: 8%;  left: -35%; animation-duration: 36s, 4.8s; animation-delay:-8s, 0s; transform: scale(1.10); }
+  .cloud.c2{ top: 22%; left: -50%; animation-duration: 46s, 5.6s; animation-delay:-18s, -1.5s; opacity:0.50; transform: scale(0.92); }
+  .cloud.c3{ top: 54%; left: -45%; animation-duration: 42s, 5.2s; animation-delay:-12s, -0.9s; opacity:0.54; transform: scale(1.18); }
+  .cloud.c4{ top: 74%; left: -55%; animation-duration: 52s, 6.0s; animation-delay:-25s, -2.1s; opacity:0.44; transform: scale(0.88); }
+  .cloud.c5{ top: 38%; left: -60%; animation-duration: 58s, 6.6s; animation-delay:-30s, -1.2s; opacity:0.38; transform: scale(0.78); }
 
   @keyframes cloudDrift{
-    0%   { transform: translateX(-160px) translateY(0) scale(1); }
-    50%  { transform: translateX(55vw) translateY(-10px) scale(1); }
-    100% { transform: translateX(calc(100vw + 520px)) translateY(0) scale(1); }
+    0%   { transform: translateX(-220px); }
+    100% { transform: translateX(calc(100vw + 620px)); }
+  }
+  @keyframes cloudBob{
+    0%,100% { translate: 0 0; }
+    50%     { translate: 0 -10px; }
   }
 
-  /* ✅ Planes with LOOP motion (circular/elliptical) */
+  /* ===== PLANES LOOP ===== */
   .loop-wrap{
     position:fixed;
     inset:0;
     z-index:2;
     pointer-events:none;
   }
-
   .loop{
     position:absolute;
     left:50%;
@@ -152,7 +193,7 @@
   .ml3{ left: 25%; top: 78%; transform: translate(-50%,-50%) rotate(-8deg); }
   .ml4{ left: 78%; top: 78%; transform: translate(-50%,-50%) rotate(10deg); }
 
-  /* vending machine */
+  /* ===== VENDING MACHINE ===== */
   .vending-container{
     width: min(980px, 94vw);
     max-height: 92vh;
@@ -194,7 +235,7 @@
     z-index:0;
   }
 
-  /* ✅ travel emojis inside machine */
+  /* travel emojis inside machine */
   .inner-stickers{
     position:absolute;
     inset:0;
@@ -241,7 +282,7 @@
     font-size: clamp(12px, 1.4vw, 14px);
   }
 
-  /* display panel (tinted blue) */
+  /* display panel */
   .screen{
     position:relative;
     z-index:4;
@@ -275,7 +316,7 @@
     pointer-events:none;
   }
 
-  /* ✅ emojis inside the display panel (your screenshot area) */
+  /* emojis inside display panel */
   .screen-emojis{
     position:absolute;
     inset:0;
@@ -302,14 +343,13 @@
     margin: 6px 0;
     font-weight:800;
     position:relative;
-    z-index:2; /* above panel emojis */
+    z-index:2;
     font-size: clamp(12px, 1.35vw, 14px);
   }
   #balance{ color: #bfe6ff; font-size: clamp(16px, 1.8vw, 20px); font-weight:900; }
   #inserted-coins{ color: #7dd3fc; font-style: italic; font-weight:800; }
   #message{ white-space: pre-line; }
 
-  /* overlay messages */
   .center-message{
     pointer-events:none;
     position:absolute;
@@ -612,14 +652,16 @@
 
 <body>
 
+  <!-- ✅ clouds layer -->
   <div class="sky-layer" aria-hidden="true">
-    <div class="cloud c1"></div>
-    <div class="cloud c2"></div>
-    <div class="cloud c3"></div>
-    <div class="cloud c4"></div>
+    <div class="cloud c1"><div class="puff"></div></div>
+    <div class="cloud c2"><div class="puff"></div></div>
+    <div class="cloud c3"><div class="puff"></div></div>
+    <div class="cloud c4"><div class="puff"></div></div>
+    <div class="cloud c5"><div class="puff"></div></div>
   </div>
 
-  <!-- LOOP planes -->
+  <!-- planes loop -->
   <div class="loop-wrap" aria-hidden="true">
     <div class="loop">
       <div class="orbit"><div class="plane">✈️</div></div>
@@ -653,7 +695,6 @@
     </div>
 
     <div class="screen" id="screenBox">
-      <!-- ✅ emojis inside the display panel -->
       <div class="screen-emojis" aria-hidden="true">
         <span style="--x:8%;  --y:22%; --r:-14deg; --d:0s;">🧳</span>
         <span style="--x:14%; --y:62%; --r:10deg;  --d:-1.2s;">🗺️</span>
