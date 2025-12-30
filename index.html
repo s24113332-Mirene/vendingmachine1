@@ -11,9 +11,8 @@
     --mid:#0b4fa8;
     --blue:#1e88e5;
     --sky:#4fc3f7;
-    --ice:#eaf6ff;
+    --ink:#061a2f;
     --shadow: rgba(0,0,0,0.18);
-    --glow: rgba(79,195,247,0.45);
     --good: rgba(34,197,94,0.55);
   }
 
@@ -21,21 +20,19 @@
   body{
     margin:0;
     height: 100vh;
-    overflow: hidden; /* one screen */
+    overflow: hidden;
     display:flex;
     justify-content:center;
     align-items:center;
     font-family:'Poppins',sans-serif;
     position:relative;
 
-    /* lighter so the map stays visible */
     background:
       radial-gradient(1200px 800px at 20% 10%, rgba(79,195,247,0.28), transparent 60%),
       radial-gradient(1100px 700px at 85% 35%, rgba(30,136,229,0.22), transparent 62%),
       linear-gradient(180deg, #0b3f74 0%, #0f5aa3 55%, #0b3f74 100%);
   }
 
-  /* map: more visible */
   body::before{
     content:"";
     position:fixed;
@@ -44,27 +41,25 @@
     background-size:cover;
     background-position:center;
     background-repeat:no-repeat;
-    opacity:0.22; /* increased visibility */
+    opacity:0.22;
     filter: hue-rotate(190deg) saturate(1.25) contrast(1.02);
     transform: scale(1.02);
     pointer-events:none;
     z-index:0;
   }
-
-  /* soft haze only (no heavy dark vignette) */
   body::after{
     content:"";
     position:fixed;
     inset:0;
     background:
-      radial-gradient(900px 520px at 50% 35%, rgba(234,246,255,0.12), transparent 70%),
-      linear-gradient(180deg, rgba(234,246,255,0.06), rgba(0,0,0,0.08));
+      radial-gradient(900px 520px at 50% 35%, rgba(234,246,255,0.10), transparent 70%),
+      linear-gradient(180deg, rgba(234,246,255,0.04), rgba(0,0,0,0.06));
     backdrop-filter: blur(1px);
     pointer-events:none;
     z-index:1;
   }
 
-  /* Background layer */
+  /* Background animations */
   .sky-layer{
     position:fixed;
     inset:0;
@@ -73,7 +68,7 @@
     overflow:hidden;
   }
 
-  /* ✅ moving clouds */
+  /* moving clouds */
   .cloud{
     position:absolute;
     width: clamp(220px, 24vw, 460px);
@@ -98,100 +93,61 @@
     100% { transform: translateX(calc(100vw + 520px)) translateY(0) scale(1); }
   }
 
-  /* ✅ planes: multiple patterns, not one direction */
-  .plane{
-    position:absolute;
-    font-size: clamp(40px, 4.4vw, 82px);
-    opacity:0.86;
-    filter: drop-shadow(0 18px 28px rgba(0,0,0,0.26));
-    will-change: transform;
-    user-select:none;
-  }
-
-  /* left -> right (sine) */
-  .p-sine1{ left:-25%; top:10%; animation: planeSine 14s linear infinite; }
-  .p-sine2{ left:-30%; top:28%; opacity:0.72; font-size: clamp(34px, 3.8vw, 70px); animation: planeSine 18s linear infinite; animation-delay:-7s; }
-  .p-sine3{ left:-28%; top:68%; opacity:0.70; font-size: clamp(32px, 3.6vw, 66px); animation: planeSine 16s linear infinite; animation-delay:-3s; }
-
-  @keyframes planeSine{
-    0%   { transform: translateX(-280px) translateY(0) rotate(-10deg); }
-    25%  { transform: translateX(28vw) translateY(-22px) rotate(-5deg); }
-    50%  { transform: translateX(55vw) translateY(18px) rotate(0deg); }
-    75%  { transform: translateX(82vw) translateY(-18px) rotate(6deg); }
-    100% { transform: translateX(calc(100vw + 320px)) translateY(0) rotate(12deg); }
-  }
-
-  /* right -> left */
-  .p-rl1{ right:-25%; top:18%; animation: planeRL 20s linear infinite; transform: rotate(180deg); opacity:0.72; }
-  .p-rl2{ right:-30%; top:82%; animation: planeRL 28s linear infinite; transform: rotate(180deg); opacity:0.55; font-size: clamp(30px, 3.4vw, 62px); animation-delay:-12s; }
-
-  @keyframes planeRL{
-    0%   { transform: translateX(0) translateY(0) rotate(188deg); }
-    25%  { transform: translateX(-25vw) translateY(18px) rotate(182deg); }
-    50%  { transform: translateX(-52vw) translateY(-14px) rotate(180deg); }
-    75%  { transform: translateX(-78vw) translateY(16px) rotate(176deg); }
-    100% { transform: translateX(calc(-100vw - 460px)) translateY(0) rotate(170deg); }
-  }
-
-  /* diagonal top-left -> bottom-right */
-  .p-diag1{ left:-20%; top:-10%; animation: diagDown 18s linear infinite; opacity:0.72; }
-  @keyframes diagDown{
-    0%   { transform: translate(-120px, -60px) rotate(30deg); }
-    100% { transform: translate(calc(100vw + 520px), calc(100vh + 260px)) rotate(40deg); }
-  }
-
-  /* diagonal bottom-left -> top-right */
-  .p-diag2{ left:-25%; bottom:-18%; animation: diagUp 22s linear infinite; opacity:0.62; font-size: clamp(32px, 3.8vw, 70px); }
-  @keyframes diagUp{
-    0%   { transform: translate(-120px, 120px) rotate(-30deg); }
-    100% { transform: translate(calc(100vw + 520px), -420px) rotate(-10deg); }
-  }
-
-  /* figure-eight */
-  .p-eight1{
-    left:50%; top:50%;
-    transform: translate(-50%,-50%);
-    animation: figureEight 18s linear infinite;
-    opacity:0.55;
-  }
-  .p-eight2{
-    left:50%; top:50%;
-    transform: translate(-50%,-50%);
-    animation: figureEight 26s linear infinite reverse;
-    opacity:0.38;
-    font-size: clamp(30px, 3.4vw, 62px);
-  }
-  @keyframes figureEight{
-    0%   { transform: translate(-50%,-50%) translate(0,0) rotate(0deg); }
-    25%  { transform: translate(-50%,-50%) translate(300px,-120px) rotate(14deg); }
-    50%  { transform: translate(-50%,-50%) translate(0,-10px) rotate(0deg); }
-    75%  { transform: translate(-50%,-50%) translate(-300px,120px) rotate(-14deg); }
-    100% { transform: translate(-50%,-50%) translate(0,0) rotate(0deg); }
-  }
-
-  /* orbit */
-  .orbit-wrap{
+  /* ✅ Planes with LOOP motion (circular/elliptical) */
+  .loop-wrap{
     position:fixed;
+    inset:0;
+    z-index:2;
+    pointer-events:none;
+  }
+
+  /* Ellipse path container */
+  .loop{
+    position:absolute;
     left:50%;
     top:50%;
     width: 120vmax;
-    height: 120vmax;
-    transform: translate(-50%, -50%);
-    z-index:2;
-    opacity:0.26;
-    pointer-events:none;
+    height: 80vmax;
+    transform: translate(-50%,-50%) rotate(-10deg);
+    opacity: 0.9;
   }
-  .orbit{ position:absolute; inset:0; animation: orbit 28s linear infinite; }
-  .orbit2{ animation-duration: 42s; animation-direction: reverse; opacity:0.20; }
-  .orb-plane{
+  .loop .orbit{
     position:absolute;
-    left: 50%;
-    top: 2%;
-    transform: translateX(-50%);
-    font-size: clamp(32px, 3.8vw, 72px);
-    filter: drop-shadow(0 18px 28px rgba(0,0,0,0.24));
+    inset:0;
+    animation: spin 18s linear infinite;
   }
-  @keyframes orbit{ from{ transform: rotate(0deg); } to{ transform: rotate(360deg); } }
+  .loop .orbit.slow{ animation-duration: 28s; opacity:0.75; }
+  .loop .orbit.slower{ animation-duration: 40s; opacity:0.55; }
+  .loop .orbit.reverse{ animation-direction: reverse; }
+
+  .loop .plane{
+    position:absolute;
+    left:50%;
+    top: 0%;
+    transform: translate(-50%, -50%);
+    font-size: clamp(40px, 4.4vw, 82px);
+    filter: drop-shadow(0 18px 28px rgba(0,0,0,0.26));
+  }
+
+  @keyframes spin{
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+
+  /* Smaller loops in corners so it feels “alive” */
+  .mini-loop{
+    position:absolute;
+    width: 34vmax;
+    height: 24vmax;
+    opacity:0.65;
+  }
+  .mini-loop .orbit{ animation: spin 14s linear infinite; }
+  .mini-loop .plane{ font-size: clamp(28px, 3.2vw, 58px); }
+
+  .ml1{ left: 15%; top: 20%; transform: translate(-50%,-50%) rotate(12deg); }
+  .ml2{ left: 82%; top: 28%; transform: translate(-50%,-50%) rotate(-18deg); }
+  .ml3{ left: 25%; top: 78%; transform: translate(-50%,-50%) rotate(-8deg); }
+  .ml4{ left: 78%; top: 78%; transform: translate(-50%,-50%) rotate(10deg); }
 
   /* vending machine */
   .vending-container{
@@ -203,8 +159,6 @@
     position:relative;
     z-index:5;
     overflow:hidden;
-
-    /* 3-gradient body */
     background:
       radial-gradient(900px 500px at 12% 0%, rgba(79,195,247,0.28), transparent 55%),
       linear-gradient(145deg, #0a2a4a 0%, #0b4fa8 50%, #4fc3f7 100%);
@@ -237,26 +191,28 @@
     z-index:0;
   }
 
-  /* ✅ stickers/emoji INSIDE the vending machine */
+  /* ✅ travel emojis inside machine (more + clearer) */
   .inner-stickers{
     position:absolute;
     inset:0;
     pointer-events:none;
     z-index:1;
-    opacity:0.18;
+    opacity:0.22; /* stronger than before */
   }
   .inner-stickers span{
     position:absolute;
-    font-size: clamp(26px, 3vw, 54px);
+    font-size: clamp(26px, 3vw, 56px);
     transform: rotate(var(--r, 0deg));
-    filter: drop-shadow(0 10px 18px rgba(0,0,0,0.18));
+    filter: drop-shadow(0 12px 20px rgba(0,0,0,0.18));
   }
-  .st1{ top: 10%; left: 6%;  --r:-14deg; }
-  .st2{ top: 18%; right: 8%; --r:10deg; }
-  .st3{ top: 48%; left: 10%; --r:12deg; }
-  .st4{ bottom: 16%; right: 10%; --r:-10deg; }
-  .st5{ bottom: 24%; left: 46%; --r:8deg; }
-  .st6{ top: 62%; right: 36%; --r:-12deg; }
+  .st1{ top: 10%; left: 5%;   --r:-14deg; }
+  .st2{ top: 18%; right: 8%;  --r:10deg; }
+  .st3{ top: 42%; left: 8%;   --r:12deg; }
+  .st4{ top: 42%; right: 10%; --r:-10deg; }
+  .st5{ bottom: 18%; left: 16%; --r:8deg; }
+  .st6{ bottom: 22%; right: 18%; --r:-12deg; }
+  .st7{ top: 62%; left: 46%;  --r:6deg; }
+  .st8{ top: 26%; left: 48%;  --r:-8deg; }
 
   .header{
     position:relative;
@@ -282,7 +238,7 @@
     font-size: clamp(12px, 1.4vw, 14px);
   }
 
-  /* ✅ better gradient for display panel */
+  /* ✅ display panel: NOT white — tinted blue glass */
   .screen{
     position:relative;
     z-index:4;
@@ -290,20 +246,20 @@
     margin: 0 auto 10px;
     padding: 14px 16px;
     border-radius: 20px;
-    color: #08233f;
+    color: #eaf6ff;   /* light text */
     text-align:center;
+
     background:
-      radial-gradient(900px 260px at 15% 0%, rgba(255,255,255,0.62), rgba(255,255,255,0) 60%),
+      radial-gradient(900px 260px at 18% 0%, rgba(255,255,255,0.18), rgba(255,255,255,0) 60%),
       linear-gradient(135deg,
-        rgba(248,253,255,0.96) 0%,
-        rgba(224,244,255,0.94) 38%,
-        rgba(197,230,255,0.92) 70%,
-        rgba(176,221,255,0.90) 100%);
-    border: 1px solid rgba(234,246,255,0.86);
+        rgba(7,42,86,0.92) 0%,
+        rgba(11,79,168,0.88) 45%,
+        rgba(79,195,247,0.34) 100%);
+    border: 1px solid rgba(234,246,255,0.22);
     box-shadow:
-      0 16px 38px rgba(0,0,0,0.14),
-      0 0 30px rgba(79,195,247,0.18),
-      inset 0 0 0 1px rgba(255,255,255,0.42);
+      0 16px 38px rgba(0,0,0,0.16),
+      0 0 34px rgba(79,195,247,0.18),
+      inset 0 0 0 1px rgba(255,255,255,0.10);
     backdrop-filter: blur(10px);
     overflow:hidden;
   }
@@ -311,8 +267,8 @@
     content:"";
     position:absolute;
     inset:0;
-    background: linear-gradient(115deg, rgba(255,255,255,0.22), rgba(255,255,255,0) 60%);
-    opacity:0.8;
+    background: linear-gradient(115deg, rgba(255,255,255,0.12), rgba(255,255,255,0) 60%);
+    opacity:0.85;
     pointer-events:none;
   }
   .screen p{
@@ -322,8 +278,8 @@
     z-index:2;
     font-size: clamp(12px, 1.35vw, 14px);
   }
-  #balance{ color: var(--mid); font-size: clamp(16px, 1.8vw, 20px); font-weight:900; }
-  #inserted-coins{ color: var(--blue); font-style: italic; font-weight:800; }
+  #balance{ color: #bfe6ff; font-size: clamp(16px, 1.8vw, 20px); font-weight:900; }
+  #inserted-coins{ color: #7dd3fc; font-style: italic; font-weight:800; }
   #message{ white-space: pre-line; }
 
   /* overlay messages */
@@ -342,7 +298,7 @@
     padding: 12px 22px;
     border-radius: 18px;
     text-shadow: 0 12px 22px rgba(0,0,0,0.22);
-    box-shadow: 0 0 28px rgba(255,255,255,0.55);
+    box-shadow: 0 0 28px rgba(255,255,255,0.25);
     filter: drop-shadow(0 18px 30px rgba(0,0,0,0.18));
   }
   .center-message.show{ animation: popGlow 1.35s ease forwards; }
@@ -353,9 +309,9 @@
     62%  { transform: translate(-50%, -50%) scale(1.02); }
     100% { opacity:0; transform: translate(-50%, -50%) scale(1.00); }
   }
-  #dispense-msg{ background: linear-gradient(45deg, rgba(30,136,229,0.95), rgba(79,195,247,0.95)); color:#fff; border:1px solid rgba(234,246,255,0.35); }
-  #success-msg{ background: linear-gradient(45deg, rgba(34,197,94,0.92), rgba(125,211,252,0.92)); color:#06213a; border:1px solid rgba(234,246,255,0.35); }
-  #error-msg{ background: linear-gradient(45deg, rgba(239,68,68,0.92), rgba(245,158,11,0.92)); color:#061a2f; border:1px solid rgba(234,246,255,0.35); }
+  #dispense-msg{ background: linear-gradient(45deg, rgba(30,136,229,0.95), rgba(79,195,247,0.95)); color:#fff; border:1px solid rgba(234,246,255,0.25); }
+  #success-msg{ background: linear-gradient(45deg, rgba(34,197,94,0.92), rgba(125,211,252,0.92)); color:#06213a; border:1px solid rgba(234,246,255,0.25); }
+  #error-msg{ background: linear-gradient(45deg, rgba(239,68,68,0.92), rgba(245,158,11,0.92)); color:#061a2f; border:1px solid rgba(234,246,255,0.25); }
 
   .coin-section{ position:relative; z-index:4; text-align:center; }
   .coin-section h3{ margin: 8px 0 8px; font-weight:900; font-size: clamp(12px, 1.4vw, 14px); }
@@ -420,7 +376,6 @@
     box-shadow: 0 18px 30px rgba(0,0,0,0.20), 0 0 40px rgba(79,195,247,0.18);
   }
 
-  /* affordable glow */
   .product.affordable:not(.selected):not(.soldout){
     border-color: rgba(34,197,94,0.75);
     box-shadow:
@@ -507,7 +462,7 @@
     font-size: 12px;
   }
 
-  /* ✅ confirm purchase centered */
+  /* Confirm centered */
   .action-buttons{
     position:relative;
     z-index:4;
@@ -545,7 +500,7 @@
     box-shadow:0 16px 30px rgba(0,0,0,0.18), 0 0 44px rgba(79,195,247,0.20);
   }
 
-  /* Receipt modal */
+  /* Receipt modal (unchanged) */
   .modal-backdrop{
     position:fixed;
     inset:0;
@@ -557,7 +512,6 @@
     padding: 18px;
   }
   .modal-backdrop.show{ display:flex; }
-
   .receipt{
     width: min(520px, 96vw);
     border-radius: 18px;
@@ -623,7 +577,7 @@
   }
 
   @media (prefers-reduced-motion: reduce){
-    .plane, .orbit, .cloud { animation:none !important; }
+    .orbit, .cloud { animation:none !important; }
     .center-message.show{ animation:none !important; opacity:0 !important; }
   }
 </style>
@@ -632,43 +586,55 @@
 <body>
 
   <div class="sky-layer" aria-hidden="true">
-    <!-- clouds -->
     <div class="cloud c1"></div>
     <div class="cloud c2"></div>
     <div class="cloud c3"></div>
     <div class="cloud c4"></div>
+  </div>
 
-    <!-- planes: different patterns -->
-    <div class="plane p-sine1">✈️</div>
-    <div class="plane p-sine2">🛩️</div>
-    <div class="plane p-sine3">✈️</div>
+  <!-- ✅ LOOP planes -->
+  <div class="loop-wrap" aria-hidden="true">
+    <!-- big central loop -->
+    <div class="loop">
+      <div class="orbit">
+        <div class="plane">✈️</div>
+      </div>
+      <div class="orbit slow reverse">
+        <div class="plane">🛩️</div>
+      </div>
+      <div class="orbit slower">
+        <div class="plane">✈️</div>
+      </div>
+    </div>
 
-    <div class="plane p-rl1">✈️</div>
-    <div class="plane p-rl2">🛩️</div>
-
-    <div class="plane p-diag1">✈️</div>
-    <div class="plane p-diag2">🛩️</div>
-
-    <div class="plane p-eight1">✈️</div>
-    <div class="plane p-eight2">🛩️</div>
-
-    <div class="orbit-wrap">
-      <div class="orbit"><div class="orb-plane">🛩️</div></div>
-      <div class="orbit orbit2"><div class="orb-plane">✈️</div></div>
+    <!-- corner mini loops -->
+    <div class="mini-loop ml1">
+      <div class="orbit"><div class="plane">🛩️</div></div>
+    </div>
+    <div class="mini-loop ml2">
+      <div class="orbit reverse"><div class="plane">✈️</div></div>
+    </div>
+    <div class="mini-loop ml3">
+      <div class="orbit slow"><div class="plane">✈️</div></div>
+    </div>
+    <div class="mini-loop ml4">
+      <div class="orbit slow reverse"><div class="plane">🛩️</div></div>
     </div>
   </div>
 
   <div class="vending-container" id="machine">
     <div class="shine"></div>
 
-    <!-- stickers inside -->
+    <!-- ✅ travel stickers inside machine -->
     <div class="inner-stickers" aria-hidden="true">
       <span class="st1">🗺️</span>
       <span class="st2">🧳</span>
       <span class="st3">🧭</span>
-      <span class="st4">🌴</span>
-      <span class="st5">📍</span>
-      <span class="st6">🛫</span>
+      <span class="st4">📸</span>
+      <span class="st5">🌴</span>
+      <span class="st6">🏝️</span>
+      <span class="st7">🛫</span>
+      <span class="st8">📍</span>
     </div>
 
     <div class="header">
@@ -804,7 +770,6 @@
       </div>
     </div>
 
-    <!-- ✅ Confirm Purchase centered -->
     <div class="action-buttons">
       <button class="primary" onclick="confirmPurchase()">🧾 Confirm Purchase</button>
       <div class="secondary-row">
@@ -890,7 +855,6 @@
       else if(stock <= 2) badge.classList.add("low");
       card.querySelector(".stock").textContent = stock;
 
-      // glow if user can afford one more of this item with remaining balance
       if(!card.classList.contains("soldout") && qty === 0 && balance > 0 && price <= rem){
         card.classList.add("affordable");
       } else {
